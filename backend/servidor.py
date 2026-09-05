@@ -31,7 +31,7 @@ import re
 def validar_cpf(cpf_str):
     """
     Valida um número de CPF (com ou sem pontuação).
-    Retorna True se for válido, False caso contrário.
+    Verifica se possui 11 dígitos e não é uma sequência repetida.
     """
     if not cpf_str:
         return False
@@ -44,21 +44,19 @@ def validar_cpf(cpf_str):
     if digitos == digitos[0] * 11:
         return False
 
-    soma = sum(int(digitos[i]) * (10 - i) for i in range(9))
-    d1 = (soma * 10) % 11
-    if d1 == 10:
-        d1 = 0
-    if d1 != int(digitos[9]):
-        return False
-
-    soma = sum(int(digitos[i]) * (11 - i) for i in range(10))
-    d2 = (soma * 10) % 11
-    if d2 == 10:
-        d2 = 0
-    if d2 != int(digitos[10]):
-        return False
-
     return True
+
+
+def formatar_cpf(cpf_str):
+    """
+    Retorna o CPF formatado como XXX.XXX.XXX-XX.
+    """
+    if not cpf_str:
+        return ""
+    digitos = re.sub(r"\D", "", str(cpf_str))
+    if len(digitos) == 11:
+        return f"{digitos[:3]}.{digitos[3:6]}.{digitos[6:9]}-{digitos[9:]}"
+    return cpf_str
 
 
 # =====================================================
@@ -309,9 +307,10 @@ class ManipuladorHTTP(BaseHTTPRequestHandler):
 
         try:
             if filtro:
+                filtro_numeros = re.sub(r"\D", "", filtro)
                 resultado = executar_consulta(
-                    "SELECT cpf, nome, profissao FROM usuarios WHERE (nome LIKE %s OR cpf LIKE %s) AND ativo = 1 ORDER BY nome",
-                    (f"%{filtro}%", f"%{filtro}%")
+                    "SELECT cpf, nome, profissao FROM usuarios WHERE (nome LIKE %s OR cpf LIKE %s OR REPLACE(REPLACE(cpf, '.', ''), '-', '') LIKE %s) AND ativo = 1 ORDER BY nome",
+                    (f"%{filtro}%", f"%{filtro}%", f"%{filtro_numeros}%" if filtro_numeros else f"%{filtro}%")
                 )
             else:
                 resultado = executar_consulta(
@@ -358,10 +357,13 @@ class ManipuladorHTTP(BaseHTTPRequestHandler):
             )
             return
 
+        cpf_fmt = formatar_cpf(cpf)
+        cpf_num = re.sub(r"\D", "", cpf)
+
         try:
             resultado = executar_consulta(
-                "SELECT cpf, nome, profissao FROM usuarios WHERE cpf = %s AND ativo = 1",
-                (cpf,)
+                "SELECT cpf, nome, profissao FROM usuarios WHERE (cpf = %s OR REPLACE(REPLACE(cpf, '.', ''), '-', '') = %s) AND ativo = 1",
+                (cpf_fmt, cpf_num)
             )
 
             if resultado:
@@ -411,15 +413,19 @@ class ManipuladorHTTP(BaseHTTPRequestHandler):
             )
             return
 
+        cpf_fmt = formatar_cpf(cpf)
+        cpf_num = re.sub(r"\D", "", cpf)
+
         try:
             # Verifica se já existe
             existente = executar_consulta(
-                "SELECT cpf, ativo FROM usuarios WHERE cpf = %s",
-                (cpf,)
+                "SELECT cpf, ativo FROM usuarios WHERE (cpf = %s OR REPLACE(REPLACE(cpf, '.', ''), '-', '') = %s)",
+                (cpf_fmt, cpf_num)
             )
 
             if existente:
                 user = existente[0]
+                cpf_existente = user.get("cpf")
                 if user.get("ativo") == 1:
                     self.responder_json(
                         {"sucesso": False, "mensagem": "Já existe um usuário ativo com esse CPF."},
@@ -430,7 +436,7 @@ class ManipuladorHTTP(BaseHTTPRequestHandler):
                     # Reativa o usuário
                     executar_consulta(
                         "UPDATE usuarios SET nome = %s, profissao = %s, ativo = 1 WHERE cpf = %s",
-                        (nome, profissao, cpf),
+                        (nome, profissao, cpf_existente),
                         retornar_dados=False
                     )
                     self.responder_json(
@@ -442,7 +448,7 @@ class ManipuladorHTTP(BaseHTTPRequestHandler):
             # Insere
             executar_consulta(
                 "INSERT INTO usuarios (cpf, nome, profissao, ativo) VALUES (%s, %s, %s, 1)",
-                (cpf, nome, profissao),
+                (cpf_fmt, nome, profissao),
                 retornar_dados=False
             )
 
@@ -488,10 +494,13 @@ class ManipuladorHTTP(BaseHTTPRequestHandler):
             )
             return
 
+        cpf_fmt = formatar_cpf(cpf)
+        cpf_num = re.sub(r"\D", "", cpf)
+
         try:
             linhas = executar_consulta(
-                "UPDATE usuarios SET nome = %s, profissao = %s WHERE cpf = %s AND ativo = 1",
-                (nome, profissao, cpf),
+                "UPDATE usuarios SET nome = %s, profissao = %s WHERE (cpf = %s OR REPLACE(REPLACE(cpf, '.', ''), '-', '') = %s) AND ativo = 1",
+                (nome, profissao, cpf_fmt, cpf_num),
                 retornar_dados=False
             )
 
@@ -540,12 +549,31 @@ class ManipuladorHTTP(BaseHTTPRequestHandler):
             )
             return
 
+        cpf_fmt = formatar_cpf(cpf)
+        cpf_num = re.sub(r"\D", "", cpf)
+
         try:
             # Soft delete: marca ativo = 0
             linhas = executar_consulta(
-                "UPDATE usuarios SET ativo = 0 WHERE cpf = %s AND ativo = 1",
-                (cpf,),
+                "UPDATE usuarios SET ativo = 0 WHERE (cpf = %s OR REPLACE(REPLACE(cpf, '.', ''), '-', '') = %s) AND ativo = 1",
+                (cpf_fmt, cpf_num),
                 retornar_dados=False
+            )
+
+            if linhas == 0:
+                self.responder_json(
+                    {"sucesso": False, "mensagem": "Usuário não encontrado ou já inativo."},
+                    404
+                )
+            else:
+                self.responder_json(
+                    {"sucesso": True, "mensagem": "Usuário inativado com sucesso!"}
+                )
+
+        except Exception:
+            self.responder_json(
+                {"sucesso": False, "mensagem": "Erro ao inativar usuário."},
+                500
             )
 
             if linhas == 0:

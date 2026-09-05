@@ -11,18 +11,22 @@ O **Sistema de Controle e Consulta de Usuários** é uma aplicação corporativa
 
 ### Regras de Negócio
 - **Identificação Única**: Cada usuário é identificado unicamente pelo seu **CPF** (Chave Primária da tabela `usuarios`).
+- **Máscara Automática de CPF**: Formatação dinâmica em tempo real (`XXX.XXX.XXX-XX`) à medida que o usuário digita nos campos de formulário.
+- **Busca e Comparação Flexível**: O sistema permite consultar, atualizar e inativar registros tanto digitando o CPF com pontuação (`123.456.789-01`) quanto apenas números (`12345678901`).
 - **Inativação Lógica (*Soft Delete*)**: O sistema não exclui fisicamente os registros de usuários da base de dados ao remover um cadastro. Em vez disso, altera o status `ativo` para `0` (Inativo).
 - **Filtro de Exibição**: Todas as consultas e listagens no sistema exibem estritamente registros de usuários ativos (`ativo = 1`).
 - **Reativação Automática**: Ao cadastrar um CPF que já foi inativado no passado, o sistema atualiza seus dados (Nome e Profissão) e reativa o registro (`ativo = 1`).
-- **Edição em Duas Etapas**: Para atualizar o cadastro, o operador informa primeiro o CPF do usuário desejado. O sistema busca e carrega automaticamente os dados atuais (Nome e Profissão) para edição e posterior confirmação.
+- **Edição em Duas Etapas**: Para atualizar o cadastro, o operador informa o CPF do usuário desejado. O sistema busca e carrega automaticamente os dados atuais (Nome e Profissão) para edição e posterior confirmação.
+- **Telas Dedicadas**: Separação clara de fluxos em páginas exclusivas (`adicionar.html`, `atualizar.html`, `deletar.html`).
 - **Autenticação Administrativa**: O acesso ao painel de gerenciamento exige autenticação prévia de usuário administrador na tabela `admins`.
 
 ### Escopo Funcional
 - **Login Administrativo**: Validação de credenciais de administradores ativos no MySQL.
-- **Consulta de Usuários**: Busca textual flexível por nome com exibição tabular de CPF, Nome e Profissão.
-- **Inclusão de Usuários**: Formulário para inserção de novos usuários ativos.
-- **Atualização de Usuários**: Consulta prévia por CPF e alteração dos dados cadastrais.
-- **Exclusão Lógica de Usuários**: Inativação por CPF com alteração do campo `ativo` para `0`.
+- **Consulta de Usuários**: Busca textual flexível por Nome **OU** por CPF com exibição tabular de CPF, Nome e Profissão.
+- **Inclusão de Usuários**: Formulário para inserção de novos usuários ativos com validação de formato de CPF.
+- **Atualização de Usuários**: Consulta prévia por CPF (carregando Nome e Profissão) e alteração dos dados cadastrais.
+- **Exclusão Lógica de Usuários**: Inativação por CPF com mensagem clara de confirmação em verde.
+- **Botão Sair**: Encerramento seguro de sessão e retorno à tela de login inicial.
 
 ---
 

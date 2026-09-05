@@ -59,7 +59,7 @@
                 CPF:
             </label>
 
-            <input type="text" id="cpf" placeholder="Digite o CPF do usuário a ser deletado...">
+            <input type="text" id="cpf" oninput="aplicarMascaraCPF(this)" placeholder="Digite o CPF do usuário a ser deletado...">
 
             <button type="button" class="botao botao-atualizar" onclick="buscarUsuarioParaDeletar()" style="margin-left: 10px; width: auto; padding: 12px 20px; font-size: 15px;">
                 🔍 Verificar CPF

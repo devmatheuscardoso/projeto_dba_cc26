@@ -59,7 +59,7 @@
                 CPF:
             </label>
 
-            <input type="text" id="cpf" placeholder="Digite o CPF do usuário a ser atualizado...">
+            <input type="text" id="cpf" oninput="aplicarMascaraCPF(this)" placeholder="Digite o CPF do usuário a ser atualizado...">
 
             <button type="button" class="botao botao-atualizar" onclick="buscarUsuarioPorCPF()" style="margin-left: 10px; width: auto; padding: 12px 20px; font-size: 15px;">
                 🔍 Buscar CPF

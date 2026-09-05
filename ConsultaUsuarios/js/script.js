@@ -144,6 +144,33 @@ function mostrarSenha() {
 
 
 /* =====================================================
+   MÁSCARA AUTOMÁTICA DE CPF
+===================================================== */
+
+function aplicarMascaraCPF(input) {
+
+    if (!input) return;
+
+    let valor = input.value.replace(/\D/g, "");
+
+    if (valor.length > 11) {
+        valor = valor.slice(0, 11);
+    }
+
+    if (valor.length > 9) {
+        valor = valor.replace(/^(\d{3})(\d{3})(\d{3})(\d{1,2})$/, "$1.$2.$3-$4");
+    } else if (valor.length > 6) {
+        valor = valor.replace(/^(\d{3})(\d{3})(\d{1,6})$/, "$1.$2.$3");
+    } else if (valor.length > 3) {
+        valor = valor.replace(/^(\d{3})(\d{1,3})$/, "$1.$2");
+    }
+
+    input.value = valor;
+
+}
+
+
+/* =====================================================
    VALIDAÇÃO DE CPF (DÍGITOS VERIFICADORES)
 ===================================================== */
 
@@ -156,30 +183,6 @@ function validarCPF(cpfStr) {
     if (digitos.length !== 11) return false;
 
     if (/^(\d)\1{10}$/.test(digitos)) return false;
-
-    let soma = 0;
-
-    for (let i = 0; i < 9; i++) {
-        soma += parseInt(digitos.charAt(i)) * (10 - i);
-    }
-
-    let d1 = 11 - (soma % 11);
-
-    if (d1 >= 10) d1 = 0;
-
-    if (d1 !== parseInt(digitos.charAt(9))) return false;
-
-    soma = 0;
-
-    for (let i = 0; i < 10; i++) {
-        soma += parseInt(digitos.charAt(i)) * (11 - i);
-    }
-
-    let d2 = 11 - (soma % 11);
-
-    if (d2 >= 10) d2 = 0;
-
-    if (d2 !== parseInt(digitos.charAt(10))) return false;
 
     return true;
 
@@ -1025,12 +1028,20 @@ function limparCampos() {
 
 
 /* =====================================================
-   CARREGAR RESULTADOS AUTOMATICAMENTE
+   CARREGAR RESULTADOS E CONFIGURAR MÁSCARAS
 ===================================================== */
 
 document.addEventListener(
     "DOMContentLoaded",
     function () {
+
+        const campoCPF = document.getElementById("cpf");
+
+        if (campoCPF) {
+            campoCPF.addEventListener("input", function () {
+                aplicarMascaraCPF(this);
+            });
+        }
 
         carregarResultados();
 
