@@ -9,7 +9,7 @@
 DB_CONFIG = {
     "host":     "localhost",
     "user":     "root",
-    "password": "Joaobsf12@",                  # <-- coloque sua senha aqui
+    "password": "SuaSenha",                  # <-- coloque sua senha aqui
     "database": "controle_usuarios",
     "charset":  "utf8mb4",
 }
