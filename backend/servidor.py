@@ -21,6 +21,44 @@ from urllib.parse import urlparse, parse_qs
 import mysql.connector
 
 from config import DB_CONFIG, PORTA_SERVIDOR
+import re
+
+
+# =====================================================
+#  VALIDAÇÃO DE CPF
+# =====================================================
+
+def validar_cpf(cpf_str):
+    """
+    Valida um número de CPF (com ou sem pontuação).
+    Retorna True se for válido, False caso contrário.
+    """
+    if not cpf_str:
+        return False
+
+    digitos = re.sub(r"\D", "", str(cpf_str))
+
+    if len(digitos) != 11:
+        return False
+
+    if digitos == digitos[0] * 11:
+        return False
+
+    soma = sum(int(digitos[i]) * (10 - i) for i in range(9))
+    d1 = (soma * 10) % 11
+    if d1 == 10:
+        d1 = 0
+    if d1 != int(digitos[9]):
+        return False
+
+    soma = sum(int(digitos[i]) * (11 - i) for i in range(10))
+    d2 = (soma * 10) % 11
+    if d2 == 10:
+        d2 = 0
+    if d2 != int(digitos[10]):
+        return False
+
+    return True
 
 
 # =====================================================
@@ -250,26 +288,30 @@ class ManipuladorHTTP(BaseHTTPRequestHandler):
 
 
     # -------------------------------------------------
-    #  API — LISTAR / BUSCAR USUÁRIOS
+    #  API — LISTAR / BUSCAR USUÁRIOS (POR NOME OU CPF)
     # -------------------------------------------------
 
     def api_listar_usuarios(self):
         """
         GET /api/usuarios
         GET /api/usuarios?nome=João
+        GET /api/usuarios?busca=123.456.789-01
 
-        Retorna todos os usuários ativos ou filtra por nome.
+        Retorna todos os usuários ativos ou filtra por nome ou CPF.
         """
         url_parseada = urlparse(self.path)
         parametros = parse_qs(url_parseada.query)
 
-        nome_filtro = parametros.get("nome", [""])[0].strip()
+        filtro = (
+            parametros.get("busca", [""])[0] or
+            parametros.get("nome", [""])[0]
+        ).strip()
 
         try:
-            if nome_filtro:
+            if filtro:
                 resultado = executar_consulta(
-                    "SELECT cpf, nome, profissao FROM usuarios WHERE nome LIKE %s AND ativo = 1 ORDER BY nome",
-                    (f"%{nome_filtro}%",)
+                    "SELECT cpf, nome, profissao FROM usuarios WHERE (nome LIKE %s OR cpf LIKE %s) AND ativo = 1 ORDER BY nome",
+                    (f"%{filtro}%", f"%{filtro}%")
                 )
             else:
                 resultado = executar_consulta(
@@ -305,6 +347,13 @@ class ManipuladorHTTP(BaseHTTPRequestHandler):
         if not cpf:
             self.responder_json(
                 {"sucesso": False, "mensagem": "Informe o CPF."},
+                400
+            )
+            return
+
+        if not validar_cpf(cpf):
+            self.responder_json(
+                {"sucesso": False, "mensagem": "CPF inválido. Verifique os números digitados."},
                 400
             )
             return
@@ -351,6 +400,13 @@ class ManipuladorHTTP(BaseHTTPRequestHandler):
         if not cpf or not nome or not profissao:
             self.responder_json(
                 {"sucesso": False, "mensagem": "Preencha todos os campos."},
+                400
+            )
+            return
+
+        if not validar_cpf(cpf):
+            self.responder_json(
+                {"sucesso": False, "mensagem": "CPF inválido. Verifique os números digitados."},
                 400
             )
             return
@@ -425,6 +481,13 @@ class ManipuladorHTTP(BaseHTTPRequestHandler):
             )
             return
 
+        if not validar_cpf(cpf):
+            self.responder_json(
+                {"sucesso": False, "mensagem": "CPF inválido. Verifique os números digitados."},
+                400
+            )
+            return
+
         try:
             linhas = executar_consulta(
                 "UPDATE usuarios SET nome = %s, profissao = %s WHERE cpf = %s AND ativo = 1",
@@ -466,6 +529,13 @@ class ManipuladorHTTP(BaseHTTPRequestHandler):
         if not cpf:
             self.responder_json(
                 {"sucesso": False, "mensagem": "Informe o CPF do usuário."},
+                400
+            )
+            return
+
+        if not validar_cpf(cpf):
+            self.responder_json(
+                {"sucesso": False, "mensagem": "CPF inválido. Verifique os números digitados."},
                 400
             )
             return

@@ -144,25 +144,96 @@ function mostrarSenha() {
 
 
 /* =====================================================
-   ABRIR TELA DE EDIÇÃO
+   VALIDAÇÃO DE CPF (DÍGITOS VERIFICADORES)
 ===================================================== */
 
-function abrirEdicao() {
+function validarCPF(cpfStr) {
 
-    window.location.href =
-        "editar.html";
+    if (!cpfStr) return false;
+
+    const digitos = String(cpfStr).replace(/\D/g, "");
+
+    if (digitos.length !== 11) return false;
+
+    if (/^(\d)\1{10}$/.test(digitos)) return false;
+
+    let soma = 0;
+
+    for (let i = 0; i < 9; i++) {
+        soma += parseInt(digitos.charAt(i)) * (10 - i);
+    }
+
+    let d1 = 11 - (soma % 11);
+
+    if (d1 >= 10) d1 = 0;
+
+    if (d1 !== parseInt(digitos.charAt(9))) return false;
+
+    soma = 0;
+
+    for (let i = 0; i < 10; i++) {
+        soma += parseInt(digitos.charAt(i)) * (11 - i);
+    }
+
+    let d2 = 11 - (soma % 11);
+
+    if (d2 >= 10) d2 = 0;
+
+    if (d2 !== parseInt(digitos.charAt(10))) return false;
+
+    return true;
 
 }
 
 
 /* =====================================================
-   VOLTAR PARA CONSULTA
+   LOGOUT / SAIR
 ===================================================== */
+
+function fazerLogout() {
+
+    sessionStorage.clear();
+
+    window.location.href = "../index.html";
+
+}
+
+
+/* =====================================================
+   NAVEGAÇÃO ENTRE TELAS
+===================================================== */
+
+function abrirEdicao() {
+
+    window.location.href = "editar.html";
+
+}
+
+
+function abrirAdicionar() {
+
+    window.location.href = "adicionar.html";
+
+}
+
+
+function abrirAtualizar() {
+
+    window.location.href = "atualizar.html";
+
+}
+
+
+function abrirDeletar() {
+
+    window.location.href = "deletar.html";
+
+}
+
 
 function voltarConsulta() {
 
-    window.location.href =
-        "consulta.html";
+    window.location.href = "consulta.html";
 
 }
 
@@ -404,6 +475,18 @@ function buscarUsuarioPorCPF() {
     }
 
 
+    if (!validarCPF(cpf)) {
+
+        mensagem.textContent =
+            "CPF inválido. Verifique os números digitados.";
+
+        mensagem.style.color = "red";
+
+        return;
+
+    }
+
+
     fetch(API_URL + "/usuarios/buscar-cpf?cpf=" + encodeURIComponent(cpf))
 
     .then(function (resposta) {
@@ -424,7 +507,7 @@ function buscarUsuarioPorCPF() {
             }
 
             mensagem.textContent =
-                "Usuário encontrado! Altere o nome e a profissão e clique em 'Atualizar Cadastro'.";
+                "Usuário encontrado! Altere o nome e a profissão e clique em 'Salvar Alterações'.";
 
             mensagem.style.color = "green";
 
@@ -440,6 +523,116 @@ function buscarUsuarioPorCPF() {
     .catch(function (erro) {
 
         console.error("Erro ao buscar por CPF:", erro);
+
+        mensagem.textContent =
+            "Erro ao conectar com o servidor.";
+
+        mensagem.style.color = "red";
+
+    });
+
+}
+
+
+/* =====================================================
+   VERIFICAR USUÁRIO PARA DELETAR
+===================================================== */
+
+function buscarUsuarioParaDeletar() {
+
+    const campoCPF =
+        document.getElementById("cpf");
+
+    const mensagem =
+        document.getElementById("mensagem-edicao");
+
+    const secaoDeletar =
+        document.getElementById("secao-dados-deletar");
+
+    const spanNome =
+        document.getElementById("deletar-nome");
+
+    const spanProfissao =
+        document.getElementById("deletar-profissao");
+
+
+    if (!campoCPF || !mensagem) {
+        return;
+    }
+
+
+    const cpf =
+        campoCPF.value.trim();
+
+
+    if (cpf === "") {
+
+        mensagem.textContent =
+            "Digite o CPF para verificar os dados.";
+
+        mensagem.style.color = "red";
+
+        return;
+
+    }
+
+
+    if (!validarCPF(cpf)) {
+
+        mensagem.textContent =
+            "CPF inválido. Verifique os números digitados.";
+
+        mensagem.style.color = "red";
+
+        return;
+
+    }
+
+
+    fetch(API_URL + "/usuarios/buscar-cpf?cpf=" + encodeURIComponent(cpf))
+
+    .then(function (resposta) {
+
+        return resposta.json();
+
+    })
+    .then(function (dados) {
+
+        if (dados.sucesso) {
+
+            if (secaoDeletar) {
+                secaoDeletar.style.display = "block";
+            }
+
+            if (spanNome) {
+                spanNome.textContent = dados.usuario.nome;
+            }
+
+            if (spanProfissao) {
+                spanProfissao.textContent = dados.usuario.profissao;
+            }
+
+            mensagem.textContent =
+                "Usuário encontrado! Clique abaixo para inativar.";
+
+            mensagem.style.color = "green";
+
+        } else {
+
+            if (secaoDeletar) {
+                secaoDeletar.style.display = "none";
+            }
+
+            mensagem.textContent = dados.mensagem;
+
+            mensagem.style.color = "red";
+
+        }
+
+    })
+    .catch(function (erro) {
+
+        console.error("Erro ao buscar para deletar:", erro);
 
         mensagem.textContent =
             "Erro ao conectar com o servidor.";
@@ -490,10 +683,6 @@ function adicionarUsuario() {
         campoProfissao.value.trim();
 
 
-    /*
-       Verifica se todos os campos foram preenchidos.
-    */
-
     if (
         cpf === "" ||
         nome === "" ||
@@ -510,9 +699,17 @@ function adicionarUsuario() {
     }
 
 
-    /*
-       Envia os dados para o backend.
-    */
+    if (!validarCPF(cpf)) {
+
+        mensagem.textContent =
+            "CPF inválido. Verifique os números digitados.";
+
+        mensagem.style.color = "red";
+
+        return;
+
+    }
+
 
     fetch(API_URL + "/usuarios", {
 
@@ -604,10 +801,6 @@ function atualizarUsuario() {
         campoProfissao.value.trim();
 
 
-    /*
-       Verifica os campos.
-    */
-
     if (
         cpf === "" ||
         nome === "" ||
@@ -624,9 +817,17 @@ function atualizarUsuario() {
     }
 
 
-    /*
-       Envia a atualização para o backend.
-    */
+    if (!validarCPF(cpf)) {
+
+        mensagem.textContent =
+            "CPF inválido. Verifique os números digitados.";
+
+        mensagem.style.color = "red";
+
+        return;
+
+    }
+
 
     fetch(API_URL + "/usuarios", {
 
@@ -704,7 +905,7 @@ function deletarUsuario() {
     if (cpf === "") {
 
         mensagem.textContent =
-            "Digite apenas o CPF do usuário que deseja deletar/inativar.";
+            "Digite o CPF do usuário que deseja inativar.";
 
         mensagem.style.color = "red";
 
@@ -713,9 +914,17 @@ function deletarUsuario() {
     }
 
 
-    /*
-       Confirma a inativação.
-    */
+    if (!validarCPF(cpf)) {
+
+        mensagem.textContent =
+            "CPF inválido. Verifique os números digitados.";
+
+        mensagem.style.color = "red";
+
+        return;
+
+    }
+
 
     const confirmar =
         confirm(
@@ -727,10 +936,6 @@ function deletarUsuario() {
         return;
     }
 
-
-    /*
-       Envia a solicitação de inativação para o backend.
-    */
 
     fetch(API_URL + "/usuarios", {
 
@@ -759,6 +964,11 @@ function deletarUsuario() {
             mensagem.style.color = "green";
 
             limparCampos();
+
+            const secaoDeletar = document.getElementById("secao-dados-deletar");
+            if (secaoDeletar) {
+                secaoDeletar.style.display = "none";
+            }
 
         } else {
 

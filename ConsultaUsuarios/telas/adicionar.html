@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Adicionar Usuário</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+
+</head>
+
+<body>
+
+    <!-- Barra superior -->
+    <header class="barra-superior">
+
+        <div class="titulo-sistema">
+            👥 &nbsp; Adicionar Usuário
+        </div>
+
+        <button class="botao-sair" onclick="fazerLogout()">
+            🚪 Sair
+        </button>
+
+    </header>
+
+
+    <!-- Botão voltar -->
+    <button class="botao-voltar" onclick="voltarConsulta()">
+        ← &nbsp; Voltar
+    </button>
+
+
+    <!-- Conteúdo -->
+    <main class="editar-container">
+
+        <div class="titulo-pagina">
+
+            <div class="icone-editar">
+                👤+
+            </div>
+
+            <h1>Adicionar Usuário</h1>
+
+            <p>
+                Preencha os dados abaixo para cadastrar um novo usuário no sistema.
+            </p>
+
+        </div>
+
+
+        <!-- CPF -->
+        <div class="formulario-linha">
+
+            <label for="cpf">
+                CPF:
+            </label>
+
+            <input type="text" id="cpf" placeholder="Digite o CPF do usuário (ex: 123.456.789-00)...">
+
+        </div>
+
+
+        <!-- Nome -->
+        <div class="formulario-linha">
+
+            <label for="nome">
+                Nome:
+            </label>
+
+            <input type="text" id="nome" placeholder="Digite o nome completo do usuário...">
+
+        </div>
+
+
+        <!-- Profissão -->
+        <div class="formulario-linha">
+
+            <label for="profissao">
+                Profissão:
+            </label>
+
+            <input type="text" id="profissao" placeholder="Digite a profissão do usuário...">
+
+        </div>
+
+
+        <!-- Botão Adicionar -->
+        <div class="botoes-edicao" style="justify-content: center;">
+
+            <button class="botao botao-adicionar" onclick="adicionarUsuario()" style="width: 100%; max-width: 400px;">
+                👤+ &nbsp; Cadastrar Usuário
+            </button>
+
+        </div>
+
+
+        <p id="mensagem-edicao"></p>
+
+    </main>
+
+
+    <script src="../js/script.js"></script>
+
+</body>
+
+</html>

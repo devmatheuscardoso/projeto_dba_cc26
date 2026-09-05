@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Editar Usuários</title>
+    <title>Atualizar Cadastro</title>
 
     <link rel="stylesheet" href="../css/style.css">
 
@@ -18,7 +18,7 @@
     <header class="barra-superior">
 
         <div class="titulo-sistema">
-            👥 &nbsp; Gerenciar Usuários
+            📝 &nbsp; Atualizar Cadastro
         </div>
 
         <button class="botao-sair" onclick="fazerLogout()">
@@ -40,35 +40,35 @@
         <div class="titulo-pagina">
 
             <div class="icone-editar">
-                👥
+                📝
             </div>
 
-            <h1>Editar Usuários</h1>
+            <h1>Atualizar Cadastro</h1>
 
             <p>
-                Adicione, edite ou remova usuários do sistema.
+                Informe o CPF do usuário para carregar os dados, altere as informações e clique em salvar.
             </p>
 
         </div>
 
 
-        <!-- CPF -->
+        <!-- Etapa 1: CPF -->
         <div class="formulario-linha">
 
             <label for="cpf">
                 CPF:
             </label>
 
-            <input type="text" id="cpf" placeholder="Digite o CPF do usuário...">
+            <input type="text" id="cpf" placeholder="Digite o CPF do usuário a ser atualizado...">
 
-            <button type="button" class="botao botao-atualizar" onclick="buscarUsuarioPorCPF()" style="margin-left: 10px; width: auto; padding: 12px 18px; font-size: 14px;">
+            <button type="button" class="botao botao-atualizar" onclick="buscarUsuarioPorCPF()" style="margin-left: 10px; width: auto; padding: 12px 20px; font-size: 15px;">
                 🔍 Buscar CPF
             </button>
 
         </div>
 
 
-        <!-- Nome e Profissão (preenchidos ao buscar CPF ou ao cadastrar novo) -->
+        <!-- Etapa 2: Nome e Profissão -->
         <div id="secao-dados-usuario">
 
             <!-- Nome -->
@@ -78,7 +78,7 @@
                     Nome:
                 </label>
 
-                <input type="text" id="nome" placeholder="Digite o nome do usuário...">
+                <input type="text" id="nome" placeholder="Nome do usuário...">
 
             </div>
 
@@ -90,28 +90,18 @@
                     Profissão:
                 </label>
 
-                <input type="text" id="profissao" placeholder="Digite a profissão do usuário...">
+                <input type="text" id="profissao" placeholder="Profissão do usuário...">
 
             </div>
 
         </div>
 
 
-        <!-- Botões -->
-        <div class="botoes-edicao">
+        <!-- Botão Atualizar -->
+        <div class="botoes-edicao" style="justify-content: center;">
 
-            <button class="botao botao-adicionar" onclick="adicionarUsuario()">
-                👤+ &nbsp; Adicionar Usuário
-            </button>
-
-
-            <button class="botao botao-atualizar" onclick="atualizarUsuario()">
-                📝 &nbsp; Atualizar Cadastro
-            </button>
-
-
-            <button class="botao botao-deletar" onclick="deletarUsuario()">
-                🗑 &nbsp; Deletar Usuário
+            <button class="botao botao-atualizar" onclick="atualizarUsuario()" style="width: 100%; max-width: 400px;">
+                📝 &nbsp; Salvar Alterações
             </button>
 
         </div>

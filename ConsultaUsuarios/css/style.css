@@ -61,6 +61,36 @@ body {
 }
 
 
+.botao-sair {
+
+    background: #dc3545;
+
+    color: white;
+
+    border: none;
+
+    padding: 8px 18px;
+
+    border-radius: 6px;
+
+    font-size: 16px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+
+.botao-sair:hover {
+
+    background: #c82333;
+
+    transform: translateY(-1px);
+}
+
+
 .controles-janela {
 
     display: flex;

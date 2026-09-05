@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Deletar Usuário</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+
+</head>
+
+<body>
+
+    <!-- Barra superior -->
+    <header class="barra-superior">
+
+        <div class="titulo-sistema">
+            🗑 &nbsp; Deletar / Inativar Usuário
+        </div>
+
+        <button class="botao-sair" onclick="fazerLogout()">
+            🚪 Sair
+        </button>
+
+    </header>
+
+
+    <!-- Botão voltar -->
+    <button class="botao-voltar" onclick="voltarConsulta()">
+        ← &nbsp; Voltar
+    </button>
+
+
+    <!-- Conteúdo -->
+    <main class="editar-container">
+
+        <div class="titulo-pagina">
+
+            <div class="icone-editar" style="color: #df2727;">
+                🗑
+            </div>
+
+            <h1>Deletar Usuário</h1>
+
+            <p>
+                Informe apenas o CPF do usuário para inativá-lo no sistema.
+            </p>
+
+        </div>
+
+
+        <!-- Campo CPF -->
+        <div class="formulario-linha">
+
+            <label for="cpf">
+                CPF:
+            </label>
+
+            <input type="text" id="cpf" placeholder="Digite o CPF do usuário a ser deletado...">
+
+            <button type="button" class="botao botao-atualizar" onclick="buscarUsuarioParaDeletar()" style="margin-left: 10px; width: auto; padding: 12px 20px; font-size: 15px;">
+                🔍 Verificar CPF
+            </button>
+
+        </div>
+
+
+        <!-- Informações do Usuário encontrado (opcional para confirmação visual) -->
+        <div id="secao-dados-deletar" style="margin: 20px 0; text-align: left; padding: 15px 25px; background: rgba(255,255,255,0.8); border-radius: 8px; display: none;">
+            <p><strong>Nome:</strong> <span id="deletar-nome">-</span></p>
+            <p style="margin-top: 5px;"><strong>Profissão:</strong> <span id="deletar-profissao">-</span></p>
+        </div>
+
+
+        <!-- Botão Deletar -->
+        <div class="botoes-edicao" style="justify-content: center; margin-top: 30px;">
+
+            <button class="botao botao-deletar" onclick="deletarUsuario()" style="width: 100%; max-width: 400px;">
+                🗑 &nbsp; Confirmar e Inativar Usuário
+            </button>
+
+        </div>
+
+
+        <p id="mensagem-edicao"></p>
+
+    </main>
+
+
+    <script src="../js/script.js"></script>
+
+</body>
+
+</html>
