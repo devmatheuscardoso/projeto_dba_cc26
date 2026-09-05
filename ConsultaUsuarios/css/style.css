@@ -1,0 +1,721 @@
+/* =====================================================
+   CONFIGURAÇÕES GERAIS
+===================================================== */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+
+    font-family: Arial, Helvetica, sans-serif;
+
+    min-height: 100vh;
+
+    color: #0d2b52;
+
+    background-image:
+        linear-gradient(
+            rgba(255, 255, 255, 0.55),
+            rgba(255, 255, 255, 0.55)
+        ),
+        url("../imagem/fundo.jpg.jpg");
+
+    background-size: cover;
+
+    background-position: center;
+
+    background-attachment: fixed;
+}
+
+
+/* =====================================================
+   BARRA SUPERIOR
+===================================================== */
+
+.barra-superior {
+
+    height: 68px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 0 30px;
+
+    background: rgba(255, 255, 255, 0.90);
+
+    border-bottom: 1px solid #d8dce2;
+}
+
+
+.titulo-sistema {
+
+    font-size: 22px;
+
+    color: #0d2b52;
+}
+
+
+.controles-janela {
+
+    display: flex;
+
+    gap: 28px;
+
+    font-size: 24px;
+
+    color: #111;
+}
+
+
+/* =====================================================
+   ELEMENTOS GERAIS
+===================================================== */
+
+h1 {
+
+    font-size: 40px;
+
+    color: #0b2c57;
+
+    margin-bottom: 15px;
+}
+
+
+.subtitulo {
+
+    font-size: 22px;
+
+    color: #344b67;
+
+    margin-bottom: 35px;
+}
+
+
+.botao {
+
+    border: none;
+
+    border-radius: 8px;
+
+    color: white;
+
+    font-size: 20px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+
+}
+
+
+.botao:hover {
+
+    transform: translateY(-2px);
+
+    filter: brightness(1.08);
+}
+
+
+/* =====================================================
+   TELA 1 - LOGIN
+===================================================== */
+
+.login-container {
+
+    min-height: calc(100vh - 68px);
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    text-align: center;
+}
+
+
+.icone-login {
+
+    font-size: 85px;
+
+    margin-bottom: 20px;
+}
+
+
+.login-box {
+
+    width: 720px;
+
+    max-width: 90%;
+
+    padding: 38px;
+
+    background: rgba(255, 255, 255, 0.94);
+
+    border-radius: 16px;
+
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+
+    text-align: left;
+}
+
+
+.login-box label {
+
+    display: block;
+
+    font-size: 20px;
+
+    font-weight: bold;
+
+    margin-bottom: 10px;
+
+    margin-top: 22px;
+}
+
+
+.campo {
+
+    display: flex;
+
+    align-items: center;
+
+    border: 1px solid #aeb6c2;
+
+    border-radius: 9px;
+
+    background: white;
+
+    height: 70px;
+}
+
+
+.icone-campo {
+
+    font-size: 25px;
+
+    margin-left: 18px;
+}
+
+
+.campo input {
+
+    flex: 1;
+
+    height: 100%;
+
+    border: none;
+
+    outline: none;
+
+    padding: 0 18px;
+
+    font-size: 20px;
+}
+
+
+.mostrar-senha {
+
+    border: none;
+
+    background: transparent;
+
+    font-size: 22px;
+
+    cursor: pointer;
+
+    margin-right: 18px;
+}
+
+
+.botao-acessar {
+
+    width: 100%;
+
+    height: 65px;
+
+    margin-top: 30px;
+
+    background: #1268d4;
+}
+
+
+#mensagem-login {
+
+    text-align: center;
+
+    margin-top: 15px;
+
+    font-weight: bold;
+}
+
+
+/* =====================================================
+   TELA 2 - CONSULTA
+===================================================== */
+
+.consulta-container {
+
+    min-height: calc(100vh - 68px);
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    text-align: center;
+}
+
+
+.icone-consulta {
+
+    font-size: 80px;
+
+    margin-bottom: 20px;
+}
+
+
+.consulta-area {
+
+    display: flex;
+
+    align-items: center;
+
+    width: 850px;
+
+    max-width: 90%;
+
+    gap: 15px;
+}
+
+
+.consulta-area input {
+
+    flex: 1;
+
+    height: 75px;
+
+    border: 1px solid #aeb6c2;
+
+    border-radius: 10px;
+
+    padding: 0 25px;
+
+    font-size: 20px;
+
+    outline: none;
+}
+
+
+.botao-consultar {
+
+    height: 75px;
+
+    padding: 0 35px;
+
+    background: #1268d4;
+}
+
+
+.botao-editar-topo {
+
+    position: absolute;
+
+    top: 98px;
+
+    right: 50px;
+
+    height: 65px;
+
+    padding: 0 30px;
+
+    border: none;
+
+    border-radius: 9px;
+
+    background: #1268d4;
+
+    color: white;
+
+    font-size: 19px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+
+/* =====================================================
+   BOTÃO VOLTAR
+===================================================== */
+
+.botao-voltar {
+
+    position: absolute;
+
+    top: 105px;
+
+    left: 38px;
+
+    height: 65px;
+
+    padding: 0 30px;
+
+    border: 2px solid #1268d4;
+
+    border-radius: 9px;
+
+    background: rgba(255, 255, 255, 0.90);
+
+    color: #1268d4;
+
+    font-size: 20px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+
+/* =====================================================
+   TELA 3 - EDITAR
+===================================================== */
+
+.editar-container {
+
+    width: 1000px;
+
+    max-width: 90%;
+
+    margin: 110px auto 0;
+}
+
+
+.titulo-pagina {
+
+    text-align: center;
+
+    margin-bottom: 65px;
+}
+
+
+.icone-editar {
+
+    font-size: 65px;
+
+    margin-bottom: 10px;
+}
+
+
+.titulo-pagina p {
+
+    font-size: 20px;
+
+    color: #344b67;
+}
+
+
+.formulario-linha {
+
+    display: flex;
+
+    align-items: center;
+
+    margin-bottom: 30px;
+}
+
+
+.formulario-linha label {
+
+    width: 150px;
+
+    font-size: 21px;
+
+    font-weight: bold;
+
+    color: #111;
+}
+
+
+.formulario-linha input {
+
+    flex: 1;
+
+    height: 78px;
+
+    border: 1px solid #adb5c0;
+
+    border-radius: 10px;
+
+    padding: 0 25px;
+
+    font-size: 20px;
+
+    outline: none;
+
+    background: rgba(255, 255, 255, 0.95);
+}
+
+
+.botoes-edicao {
+
+    display: flex;
+
+    gap: 25px;
+
+    margin-top: 80px;
+}
+
+
+.botoes-edicao .botao {
+
+    flex: 1;
+
+    height: 70px;
+
+    padding: 0 15px;
+}
+
+
+.botao-adicionar {
+
+    background: #20a43a;
+}
+
+
+.botao-atualizar {
+
+    background: #1268d4;
+}
+
+
+.botao-deletar {
+
+    background: #df2727;
+}
+
+
+#mensagem-edicao {
+
+    text-align: center;
+
+    margin-top: 20px;
+
+    font-weight: bold;
+
+    font-size: 18px;
+}
+
+
+/* =====================================================
+   TELA 4 - RESULTADOS
+===================================================== */
+
+.resultados-container {
+
+    width: 90%;
+
+    max-width: 1400px;
+
+    margin: 40px auto;
+
+    text-align: center;
+}
+
+
+.icone-resultados {
+
+    font-size: 65px;
+
+    margin-bottom: 10px;
+}
+
+
+.pesquisa-realizada {
+
+    display: flex;
+
+    align-items: center;
+
+    text-align: left;
+
+    padding: 20px 30px;
+
+    margin: 30px 0;
+
+    border: 1px solid #b7cee6;
+
+    border-radius: 10px;
+
+    background: rgba(255, 255, 255, 0.75);
+}
+
+
+.icone-pesquisa {
+
+    font-size: 35px;
+
+    margin-right: 20px;
+}
+
+
+.pesquisa-realizada div {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 8px;
+
+    font-size: 18px;
+}
+
+
+.pesquisa-realizada strong {
+
+    font-size: 21px;
+
+    color: #1268d4;
+}
+
+
+.tabela-container {
+
+    background: rgba(255, 255, 255, 0.94);
+
+    border-radius: 12px;
+
+    overflow: hidden;
+
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.12);
+}
+
+
+table {
+
+    width: 100%;
+
+    border-collapse: collapse;
+
+    font-size: 18px;
+}
+
+
+th {
+
+    height: 70px;
+
+    background: rgba(255, 255, 255, 0.95);
+
+    color: #0b2c57;
+
+    font-size: 20px;
+}
+
+
+td {
+
+    height: 62px;
+
+    border-top: 1px solid #d8dce2;
+
+    text-align: left;
+
+    padding: 0 50px;
+}
+
+
+.total-resultados {
+
+    margin-top: 30px;
+
+    font-size: 19px;
+}
+
+
+.total-resultados strong {
+
+    color: #1268d4;
+}
+
+
+/* =====================================================
+   RESPONSIVIDADE
+===================================================== */
+
+@media (max-width: 900px) {
+
+    h1 {
+        font-size: 32px;
+    }
+
+    .subtitulo {
+        font-size: 18px;
+    }
+
+    .consulta-area {
+        flex-direction: column;
+    }
+
+    .consulta-area input,
+    .botao-consultar {
+        width: 100%;
+    }
+
+    .formulario-linha {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .formulario-linha label {
+        width: auto;
+    }
+
+    .formulario-linha input {
+        width: 100%;
+    }
+
+    .botoes-edicao {
+        flex-direction: column;
+    }
+
+    .botao-editar-topo {
+        position: static;
+
+        display: block;
+
+        margin: 25px auto;
+    }
+
+    .editar-container {
+        margin-top: 30px;
+    }
+
+    .botao-voltar {
+        position: static;
+
+        margin: 25px;
+    }
+
+    .resultados-container {
+        width: 95%;
+    }
+
+    td {
+        padding: 0 15px;
+    }
+}

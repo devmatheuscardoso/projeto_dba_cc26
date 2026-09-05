@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sistema de Consulta de Usuários</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="pagina-login">
+
+    <!-- Barra superior -->
+    <header class="barra-superior">
+
+        <div class="titulo-sistema">
+            <span class="icone">👥</span>
+            Sistema de Consulta de Usuários
+        </div>
+
+        <div class="controles-janela">
+            <span>−</span>
+            <span>□</span>
+            <span>×</span>
+        </div>
+
+    </header>
+
+
+    <!-- Conteúdo principal -->
+    <main class="login-container">
+
+        <div class="icone-login">
+            👤
+        </div>
+
+        <h1>Bem-vindo!</h1>
+
+        <p class="subtitulo">
+            Faça login para acessar o sistema
+        </p>
+
+
+        <!-- Caixa de login -->
+        <div class="login-box">
+
+            <label for="usuario">
+                Usuário:
+            </label>
+
+            <div class="campo">
+
+                <span class="icone-campo">👤</span>
+
+                <input
+                    type="text"
+                    id="usuario"
+                    placeholder="Digite seu usuário..."
+                >
+
+            </div>
+
+
+            <label for="senha">
+                Senha:
+            </label>
+
+            <div class="campo">
+
+                <span class="icone-campo">🔒</span>
+
+                <input
+                    type="password"
+                    id="senha"
+                    placeholder="Digite sua senha..."
+                >
+
+                <button
+                    type="button"
+                    class="mostrar-senha"
+                    onclick="mostrarSenha()"
+                >
+                    👁
+                </button>
+
+            </div>
+
+
+            <button
+                class="botao botao-acessar"
+                onclick="fazerLogin()"
+            >
+                ➜ &nbsp; Acessar
+            </button>
+
+            <p id="mensagem-login"></p>
+
+        </div>
+
+    </main>
+
+
+    <script src="js/script.js"></script>
+
+</body>
+
+</html>

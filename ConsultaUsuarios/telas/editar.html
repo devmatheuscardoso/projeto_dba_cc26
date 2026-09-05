@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Editar Usuários</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+
+</head>
+
+<body>
+
+    <!-- Barra superior -->
+    <header class="barra-superior">
+
+        <div class="titulo-sistema">
+            👥 &nbsp; Editar Usuários
+        </div>
+
+
+    </header>
+
+
+    <!-- Botão voltar -->
+    <button class="botao-voltar" onclick="voltarConsulta()">
+        ← &nbsp; Voltar
+    </button>
+
+
+    <!-- Conteúdo -->
+    <main class="editar-container">
+
+        <div class="titulo-pagina">
+
+            <div class="icone-editar">
+                👥
+            </div>
+
+            <h1>Editar Usuários</h1>
+
+            <p>
+                Adicione, edite ou remova usuários do sistema.
+            </p>
+
+        </div>
+
+
+        <!-- CPF -->
+        <div class="formulario-linha">
+
+            <label for="cpf">
+                CPF:
+            </label>
+
+            <input type="text" id="cpf" placeholder="Digite o CPF do usuário...">
+
+            <button type="button" class="botao botao-atualizar" onclick="buscarUsuarioPorCPF()" style="margin-left: 10px; width: auto; padding: 12px 18px; font-size: 14px;">
+                🔍 Buscar CPF
+            </button>
+
+        </div>
+
+
+        <!-- Nome e Profissão (preenchidos ao buscar CPF ou ao cadastrar novo) -->
+        <div id="secao-dados-usuario">
+
+            <!-- Nome -->
+            <div class="formulario-linha">
+
+                <label for="nome">
+                    Nome:
+                </label>
+
+                <input type="text" id="nome" placeholder="Digite o nome do usuário...">
+
+            </div>
+
+
+            <!-- Profissão -->
+            <div class="formulario-linha">
+
+                <label for="profissao">
+                    Profissão:
+                </label>
+
+                <input type="text" id="profissao" placeholder="Digite a profissão do usuário...">
+
+            </div>
+
+        </div>
+
+
+        <!-- Botões -->
+        <div class="botoes-edicao">
+
+            <button class="botao botao-adicionar" onclick="adicionarUsuario()">
+                👤+ &nbsp; Adicionar Usuário
+            </button>
+
+
+            <button class="botao botao-atualizar" onclick="atualizarUsuario()">
+                📝 &nbsp; Atualizar Cadastro
+            </button>
+
+
+            <button class="botao botao-deletar" onclick="deletarUsuario()">
+                🗑 &nbsp; Deletar Usuário
+            </button>
+
+        </div>
+
+
+        <p id="mensagem-edicao"></p>
+
+    </main>
+
+
+    <script src="../js/script.js"></script>
+
+</body>
+
+</html>

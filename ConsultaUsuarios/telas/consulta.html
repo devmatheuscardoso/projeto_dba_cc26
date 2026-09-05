@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Consulta de Usuários</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+
+</head>
+
+<body>
+
+    <!-- Barra superior -->
+    <header class="barra-superior">
+
+        <div class="titulo-sistema">
+            🔎 Sistema de Consulta de Usuários
+        </div>
+
+
+    </header>
+
+
+    <!-- Botão Editar -->
+    <button
+        class="botao-editar-topo"
+        onclick="abrirEdicao()"
+    >
+        👤✎ &nbsp; Editar Usuários
+    </button>
+
+
+    <!-- Conteúdo -->
+    <main class="consulta-container">
+
+        <div class="icone-consulta">
+            👤🔎
+        </div>
+
+        <h1>Consulta de Usuários</h1>
+
+        <p class="subtitulo">
+            Digite o nome do usuário para consultar.
+        </p>
+
+
+        <div class="consulta-area">
+
+            <input
+                type="text"
+                id="nome-pesquisa"
+                placeholder="Digite o nome do usuário..."
+            >
+
+            <button
+                class="botao botao-consultar"
+                onclick="consultarUsuario()"
+            >
+                🔍 &nbsp; Consultar
+            </button>
+
+        </div>
+
+    </main>
+
+
+    <script src="../js/script.js"></script>
+
+</body>
+
+</html>

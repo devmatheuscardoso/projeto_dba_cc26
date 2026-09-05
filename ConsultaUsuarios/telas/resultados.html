@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Resultados da Pesquisa</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+
+</head>
+
+<body>
+
+    <!-- Barra superior -->
+    <header class="barra-superior">
+
+        <div class="titulo-sistema">
+            🔎 &nbsp; Resultados da Pesquisa
+        </div>
+
+
+    </header>
+
+
+    <!-- Botão voltar -->
+    <button
+        class="botao-voltar"
+        onclick="voltarConsulta()"
+    >
+        ← &nbsp; Voltar
+    </button>
+
+
+    <!-- Conteúdo -->
+    <main class="resultados-container">
+
+        <div class="icone-resultados">
+            🔍
+        </div>
+
+        <h1>
+            Resultados da Pesquisa
+        </h1>
+
+        <p class="subtitulo">
+            Confira abaixo os usuários encontrados.
+        </p>
+
+
+        <!-- Pesquisa realizada -->
+        <div class="pesquisa-realizada">
+
+            <span class="icone-pesquisa">
+                🔍
+            </span>
+
+            <div>
+
+                <span>
+                    Você pesquisou por:
+                </span>
+
+                <strong id="texto-pesquisa">
+                    ""
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <!-- Tabela -->
+        <div class="tabela-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>CPF</th>
+                        <th>Nome</th>
+                        <th>Profissão</th>
+                    </tr>
+
+                </thead>
+
+                <tbody id="tabela-usuarios">
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <!-- Total -->
+        <div class="total-resultados">
+
+            👥
+
+            Total de resultados:
+
+            <strong id="total-resultados">
+                0
+            </strong>
+
+        </div>
+
+    </main>
+
+
+    <script src="../js/script.js"></script>
+
+</body>
+
+</html>
