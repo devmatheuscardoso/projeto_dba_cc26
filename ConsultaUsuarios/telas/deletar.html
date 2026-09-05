@@ -8,6 +8,7 @@
 
     <title>Deletar Usuário</title>
 
+    <link rel="icon" type="image/png" href="../imagem/favicon.png">
     <link rel="stylesheet" href="../css/style.css">
 
 </head>
@@ -75,10 +76,10 @@
         </div>
 
 
-        <!-- Botão Deletar -->
-        <div class="botoes-edicao" style="justify-content: center; margin-top: 30px;">
+        <!-- Botão Deletar (oculto até a verificação do CPF) -->
+        <div class="botoes-edicao" id="container-botao-deletar" style="justify-content: center; margin-top: 30px; display: none;">
 
-            <button class="botao botao-deletar" onclick="deletarUsuario()" style="width: 100%; max-width: 400px;">
+            <button type="button" class="botao botao-deletar" onclick="deletarUsuario()" style="width: 100%; max-width: 400px;">
                 🗑 &nbsp; Confirmar e Inativar Usuário
             </button>
 

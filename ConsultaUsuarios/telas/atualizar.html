@@ -8,6 +8,7 @@
 
     <title>Atualizar Cadastro</title>
 
+    <link rel="icon" type="image/png" href="../imagem/favicon.png">
     <link rel="stylesheet" href="../css/style.css">
 
 </head>
@@ -68,8 +69,8 @@
         </div>
 
 
-        <!-- Etapa 2: Nome e Profissão -->
-        <div id="secao-dados-usuario">
+        <!-- Etapa 2: Nome e Profissão (ocultos até a verificação do CPF) -->
+        <div id="secao-dados-usuario" style="display: none;">
 
             <!-- Nome -->
             <div class="formulario-linha">
@@ -97,11 +98,15 @@
         </div>
 
 
-        <!-- Botão Atualizar -->
-        <div class="botoes-edicao" style="justify-content: center;">
+        <!-- Botão Atualizar (oculto até a verificação do CPF) -->
+        <div class="botoes-edicao" id="container-botao-atualizar" style="justify-content: center; display: none; gap: 10px; flex-wrap: wrap;">
 
-            <button class="botao botao-atualizar" onclick="atualizarUsuario()" style="width: 100%; max-width: 400px;">
+            <button class="botao botao-atualizar" id="btn-salvar-atualizar" onclick="atualizarUsuario()" style="width: 100%; max-width: 400px;">
                 📝 &nbsp; Salvar Alterações
+            </button>
+
+            <button class="botao botao-adicionar" id="btn-reativar-usuario" onclick="reativarUsuario()" style="width: 100%; max-width: 400px; display: none; background-color: #27ae60;">
+                🔄 &nbsp; Reativar e Atualizar Usuário
             </button>
 
         </div>

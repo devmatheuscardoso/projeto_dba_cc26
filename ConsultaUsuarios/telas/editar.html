@@ -8,6 +8,7 @@
 
     <title>Editar Usuários</title>
 
+    <link rel="icon" type="image/png" href="../imagem/favicon.png">
     <link rel="stylesheet" href="../css/style.css">
 
 </head>
@@ -98,19 +99,24 @@
 
 
         <!-- Botões -->
-        <div class="botoes-edicao">
+        <div class="botoes-edicao" id="container-botao-atualizar">
 
-            <button class="botao botao-adicionar" onclick="adicionarUsuario()">
+            <button type="button" class="botao botao-adicionar" onclick="adicionarUsuario()">
                 👤+ &nbsp; Adicionar Usuário
             </button>
 
 
-            <button class="botao botao-atualizar" onclick="atualizarUsuario()">
+            <button type="button" class="botao botao-atualizar" id="btn-salvar-atualizar" onclick="atualizarUsuario()">
                 📝 &nbsp; Atualizar Cadastro
             </button>
 
 
-            <button class="botao botao-deletar" onclick="deletarUsuario()">
+            <button type="button" class="botao botao-adicionar" id="btn-reativar-usuario" onclick="reativarUsuario()" style="display: none; background-color: #27ae60;">
+                🔄 &nbsp; Reativar Usuário
+            </button>
+
+
+            <button type="button" class="botao botao-deletar" onclick="deletarUsuario()">
                 🗑 &nbsp; Deletar Usuário
             </button>
 

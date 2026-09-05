@@ -336,7 +336,8 @@ class ManipuladorHTTP(BaseHTTPRequestHandler):
         """
         GET /api/usuarios/buscar-cpf?cpf=...
 
-        Retorna os dados de um usuário pelo CPF (se ativo).
+        Retorna os dados de um usuário pelo CPF.
+        Se inativo, retorna inativo: True e mensagem de confirmação.
         """
         url_parseada = urlparse(self.path)
         parametros = parse_qs(url_parseada.query)
@@ -362,17 +363,29 @@ class ManipuladorHTTP(BaseHTTPRequestHandler):
 
         try:
             resultado = executar_consulta(
-                "SELECT cpf, nome, profissao FROM usuarios WHERE (cpf = %s OR REPLACE(REPLACE(cpf, '.', ''), '-', '') = %s) AND ativo = 1",
+                "SELECT cpf, nome, profissao, ativo FROM usuarios WHERE (cpf = %s OR REPLACE(REPLACE(cpf, '.', ''), '-', '') = %s)",
                 (cpf_fmt, cpf_num)
             )
 
             if resultado:
-                self.responder_json(
-                    {"sucesso": True, "usuario": resultado[0]}
-                )
+                user = resultado[0]
+                if user.get("ativo") == 1:
+                    self.responder_json(
+                        {"sucesso": True, "usuario": user}
+                    )
+                else:
+                    self.responder_json(
+                        {
+                            "sucesso": False,
+                            "inativo": True,
+                            "mensagem": "Usuário encontrado, mas inativo. Deseja reativá-lo?",
+                            "usuario": user
+                        },
+                        200
+                    )
             else:
                 self.responder_json(
-                    {"sucesso": False, "mensagem": "Usuário não encontrado ou inativo."},
+                    {"sucesso": False, "mensagem": "Usuário não encontrado."},
                     404
                 )
 
@@ -419,13 +432,12 @@ class ManipuladorHTTP(BaseHTTPRequestHandler):
         try:
             # Verifica se já existe
             existente = executar_consulta(
-                "SELECT cpf, ativo FROM usuarios WHERE (cpf = %s OR REPLACE(REPLACE(cpf, '.', ''), '-', '') = %s)",
+                "SELECT cpf, nome, profissao, ativo FROM usuarios WHERE (cpf = %s OR REPLACE(REPLACE(cpf, '.', ''), '-', '') = %s)",
                 (cpf_fmt, cpf_num)
             )
 
             if existente:
                 user = existente[0]
-                cpf_existente = user.get("cpf")
                 if user.get("ativo") == 1:
                     self.responder_json(
                         {"sucesso": False, "mensagem": "Já existe um usuário ativo com esse CPF."},
@@ -433,19 +445,19 @@ class ManipuladorHTTP(BaseHTTPRequestHandler):
                     )
                     return
                 else:
-                    # Reativa o usuário
-                    executar_consulta(
-                        "UPDATE usuarios SET nome = %s, profissao = %s, ativo = 1 WHERE cpf = %s",
-                        (nome, profissao, cpf_existente),
-                        retornar_dados=False
-                    )
+                    # Usuário inativo existente: NÃO sobrescreve automaticamente
                     self.responder_json(
-                        {"sucesso": True, "mensagem": "Usuário reativado com sucesso!"},
-                        200
+                        {
+                            "sucesso": False,
+                            "inativo": True,
+                            "mensagem": "Usuário encontrado, mas inativo. Deseja reativá-lo?",
+                            "usuario": user
+                        },
+                        409
                     )
                     return
 
-            # Insere
+            # Insere novo
             executar_consulta(
                 "INSERT INTO usuarios (cpf, nome, profissao, ativo) VALUES (%s, %s, %s, 1)",
                 (cpf_fmt, nome, profissao),
@@ -498,25 +510,111 @@ class ManipuladorHTTP(BaseHTTPRequestHandler):
         cpf_num = re.sub(r"\D", "", cpf)
 
         try:
-            linhas = executar_consulta(
+            existente = executar_consulta(
+                "SELECT cpf, ativo FROM usuarios WHERE (cpf = %s OR REPLACE(REPLACE(cpf, '.', ''), '-', '') = %s)",
+                (cpf_fmt, cpf_num)
+            )
+
+            if not existente:
+                self.responder_json(
+                    {"sucesso": False, "mensagem": "Usuário não encontrado."},
+                    404
+                )
+                return
+
+            if existente[0].get("ativo") == 0:
+                self.responder_json(
+                    {
+                        "sucesso": False,
+                        "inativo": True,
+                        "mensagem": "Usuário encontrado, mas inativo. Deseja reativá-lo?"
+                    },
+                    400
+                )
+                return
+
+            executar_consulta(
                 "UPDATE usuarios SET nome = %s, profissao = %s WHERE (cpf = %s OR REPLACE(REPLACE(cpf, '.', ''), '-', '') = %s) AND ativo = 1",
                 (nome, profissao, cpf_fmt, cpf_num),
                 retornar_dados=False
             )
 
-            if linhas == 0:
-                self.responder_json(
-                    {"sucesso": False, "mensagem": "Usuário não encontrado ou inativo."},
-                    404
-                )
-            else:
-                self.responder_json(
-                    {"sucesso": True, "mensagem": "Cadastro atualizado com sucesso!"}
-                )
+            self.responder_json(
+                {"sucesso": True, "mensagem": "Cadastro atualizado com sucesso!"}
+            )
 
         except Exception:
             self.responder_json(
                 {"sucesso": False, "mensagem": "Erro ao atualizar usuário."},
+                500
+            )
+
+
+    # -------------------------------------------------
+    #  API — REATIVAR USUÁRIO
+    # -------------------------------------------------
+
+    def api_reativar_usuario(self):
+        """
+        POST /api/usuarios/reativar
+
+        Corpo: { "cpf": "...", "nome": "...", "profissao": "..." }
+        Reativa um usuário inativo e atualiza nome/profissão se fornecidos.
+        """
+        dados = self.ler_corpo_json()
+
+        cpf = dados.get("cpf", "").strip()
+        nome = dados.get("nome", "").strip()
+        profissao = dados.get("profissao", "").strip()
+
+        if not cpf:
+            self.responder_json(
+                {"sucesso": False, "mensagem": "Informe o CPF."},
+                400
+            )
+            return
+
+        if not validar_cpf(cpf):
+            self.responder_json(
+                {"sucesso": False, "mensagem": "CPF inválido. Verifique os números digitados."},
+                400
+            )
+            return
+
+        cpf_fmt = formatar_cpf(cpf)
+        cpf_num = re.sub(r"\D", "", cpf)
+
+        try:
+            existente = executar_consulta(
+                "SELECT cpf, nome, profissao, ativo FROM usuarios WHERE (cpf = %s OR REPLACE(REPLACE(cpf, '.', ''), '-', '') = %s)",
+                (cpf_fmt, cpf_num)
+            )
+
+            if not existente:
+                self.responder_json(
+                    {"sucesso": False, "mensagem": "Usuário não encontrado."},
+                    404
+                )
+                return
+
+            user = existente[0]
+            cpf_existente = user.get("cpf")
+            novo_nome = nome if nome else user.get("nome")
+            nova_profissao = profissao if profissao else user.get("profissao")
+
+            executar_consulta(
+                "UPDATE usuarios SET nome = %s, profissao = %s, ativo = 1 WHERE cpf = %s",
+                (novo_nome, nova_profissao, cpf_existente),
+                retornar_dados=False
+            )
+
+            self.responder_json(
+                {"sucesso": True, "mensagem": "Usuário reativado com sucesso!"}
+            )
+
+        except Exception:
+            self.responder_json(
+                {"sucesso": False, "mensagem": "Erro ao reativar usuário."},
                 500
             )
 
@@ -553,9 +651,28 @@ class ManipuladorHTTP(BaseHTTPRequestHandler):
         cpf_num = re.sub(r"\D", "", cpf)
 
         try:
+            existente = executar_consulta(
+                "SELECT cpf, ativo FROM usuarios WHERE (cpf = %s OR REPLACE(REPLACE(cpf, '.', ''), '-', '') = %s)",
+                (cpf_fmt, cpf_num)
+            )
+
+            if not existente:
+                self.responder_json(
+                    {"sucesso": False, "mensagem": "Usuário não encontrado."},
+                    404
+                )
+                return
+
+            if existente[0].get("ativo") == 0:
+                self.responder_json(
+                    {"sucesso": False, "inativo": True, "mensagem": "Usuário já se encontra inativo."},
+                    400
+                )
+                return
+
             # Soft delete: marca ativo = 0
             linhas = executar_consulta(
-                "UPDATE usuarios SET ativo = 0 WHERE (cpf = %s OR REPLACE(REPLACE(cpf, '.', ''), '-', '') = %s) AND ativo = 1",
+                "UPDATE usuarios SET ativo = 0 WHERE (cpf = %s OR REPLACE(REPLACE(REPLACE(cpf, '.', ''), '-', ''), ' ', '') = %s) AND ativo = 1",
                 (cpf_fmt, cpf_num),
                 retornar_dados=False
             )
@@ -570,23 +687,8 @@ class ManipuladorHTTP(BaseHTTPRequestHandler):
                     {"sucesso": True, "mensagem": "Usuário inativado com sucesso!"}
                 )
 
-        except Exception:
-            self.responder_json(
-                {"sucesso": False, "mensagem": "Erro ao inativar usuário."},
-                500
-            )
-
-            if linhas == 0:
-                self.responder_json(
-                    {"sucesso": False, "mensagem": "Usuário não encontrado ou já inativo."},
-                    404
-                )
-            else:
-                self.responder_json(
-                    {"sucesso": True, "mensagem": "Usuário inativado com sucesso!"}
-                )
-
-        except Exception:
+        except Exception as erro:
+            print(f"[ERRO DELETAR] {erro}")
             self.responder_json(
                 {"sucesso": False, "mensagem": "Erro ao inativar usuário."},
                 500
@@ -633,6 +735,9 @@ class ManipuladorHTTP(BaseHTTPRequestHandler):
 
         elif caminho == "/api/usuarios":
             self.api_adicionar_usuario()
+
+        elif caminho == "/api/usuarios/reativar":
+            self.api_reativar_usuario()
 
         else:
             self.responder_json(

@@ -9,28 +9,53 @@ Sistema web completo para controle e gerenciamento de usuários com autenticaç�
 ### Apresentação do Tema
 O **Sistema de Controle e Consulta de Usuários** é uma aplicação corporativa voltada ao gerenciamento seguro e centralizado de cadastros de pessoas e permissões de acesso administrativo.
 
-### Regras de Negócio
-- **Identificação Única**: Cada usuário é identificado unicamente pelo seu **CPF** (Chave Primária da tabela `usuarios`).
-- **Máscara Automática de CPF**: Formatação dinâmica em tempo real (`XXX.XXX.XXX-XX`) à medida que o usuário digita nos campos de formulário.
-- **Busca e Comparação Flexível**: O sistema permite consultar, atualizar e inativar registros tanto digitando o CPF com pontuação (`123.456.789-01`) quanto apenas números (`12345678901`).
-- **Inativação Lógica (*Soft Delete*)**: O sistema não exclui fisicamente os registros de usuários da base de dados ao remover um cadastro. Em vez disso, altera o status `ativo` para `0` (Inativo).
-- **Filtro de Exibição**: Todas as consultas e listagens no sistema exibem estritamente registros de usuários ativos (`ativo = 1`).
-- **Reativação Automática**: Ao cadastrar um CPF que já foi inativado no passado, o sistema atualiza seus dados (Nome e Profissão) e reativa o registro (`ativo = 1`).
-- **Edição em Duas Etapas**: Para atualizar o cadastro, o operador informa o CPF do usuário desejado. O sistema busca e carrega automaticamente os dados atuais (Nome e Profissão) para edição e posterior confirmação.
-- **Telas Dedicadas**: Separação clara de fluxos em páginas exclusivas (`adicionar.html`, `atualizar.html`, `deletar.html`).
-- **Autenticação Administrativa**: O acesso ao painel de gerenciamento exige autenticação prévia de usuário administrador na tabela `admins`.
+### Arquitetura e Tecnologias
+- **Backend**: Python 3.8+ utilizando apenas bibliotecas nativas (`http.server`, `json`, `re`, `urllib`) e o driver oficial `mysql-connector-python`.
+- **Banco de Dados**: MySQL Server 8.0+ com engine InnoDB e charset `utf8mb4`.
+- **Frontend**: Interface web moderna desenvolvida em HTML5, CSS3 estilizado e JavaScript puro (ES6+ Vanilla).
 
-### Escopo Funcional
-- **Login Administrativo**: Validação de credenciais de administradores ativos no MySQL.
-- **Consulta de Usuários**: Busca textual flexível por Nome **OU** por CPF com exibição tabular de CPF, Nome e Profissão.
-- **Inclusão de Usuários**: Formulário para inserção de novos usuários ativos com validação de formato de CPF.
-- **Atualização de Usuários**: Consulta prévia por CPF (carregando Nome e Profissão) e alteração dos dados cadastrais.
-- **Exclusão Lógica de Usuários**: Inativação por CPF com mensagem clara de confirmação em verde.
-- **Botão Sair**: Encerramento seguro de sessão e retorno à tela de login inicial.
+### Regras de Negócio e Funcionalidades
+- **Identificação Única**: Cada usuário é identificado unicamente pelo seu **CPF** (Chave Primária da tabela `usuarios`).
+- **Validação Algorítmica de CPF**: Verificação de quantidade de dígitos (11 dígitos), sequências repetidas e formato numérico.
+- **Máscara Automática de CPF**: Formatação dinâmica em tempo real (`XXX.XXX.XXX-XX`) à medida que o usuário digita nos campos de formulário.
+- **Busca e Comparação Flexível**: O sistema permite consultar, atualizar e inativar registros tanto digitando o CPF com pontuação (`123.456.789-01`) quanto apenas números (`12345678901`), além de busca parcial por Nome.
+- **Inativação Lógica (*Soft Delete*)**: O sistema não exclui fisicamente os registros de usuários da base de dados. Em vez disso, altera o status `ativo` para `0` (Inativo).
+- **Filtro de Exibição**: Todas as consultas e listagens no sistema exibem estritamente registros de usuários ativos (`ativo = 1`).
+- **Reativação de Cadastros**: Ao tentar cadastrar ou consultar um CPF inativo, o sistema detecta o registro e oferece opção de reativação com atualização automática de dados (Nome e Profissão).
+- **Edição em Duas Etapas**: Para atualizar o cadastro, o operador informa o CPF do usuário desejado. O sistema busca e carrega automaticamente os dados atuais para edição e posterior confirmação.
+- **Telas Dedicadas**: Separação clara de fluxos em páginas exclusivas (`adicionar.html`, `atualizar.html`, `deletar.html`, `consulta.html`, `resultados.html`).
+- **Autenticação Administrativa**: O acesso ao painel de gerenciamento exige autenticação prévia de usuário administrador na tabela `admins`.
 
 ---
 
-## 2. Modelagem de Dados
+## 2. Estrutura do Projeto
+
+```text
+projeto_dba_cc26/
+├── ConsultaUsuarios/              # Arquivos de Frontend (HTML/CSS/JS)
+│   ├── css/                       # Estilos CSS da aplicação
+│   ├── imagem/                    # Recursos de imagem e logotipos
+│   ├── js/                        # Scripts JavaScript (máscaras, chamadas API)
+│   ├── telas/                     # Páginas HTML dos fluxos
+│   │   ├── adicionar.html         # Cadastro de novos usuários
+│   │   ├── atualizar.html         # Edição de cadastro existente
+│   │   ├── consulta.html          # Busca por Nome ou CPF
+│   │   ├── deletar.html           # Inativação de usuários
+│   │   ├── editar.html            # Formulário complementar de edição
+│   │   └── resultados.html        # Exibição de resultados
+│   ├── index.html                 # Tela de Login Administrativo
+│   └── favicon.ico                # Ícone da aplicação
+├── backend/                       # Servidor Python e Configurações
+│   ├── config.py                  # Credenciais do banco e porta do servidor
+│   ├── init_db.sql                # Script DDL e cargas iniciais
+│   └── servidor.py                # Servidor HTTP nativo e API REST
+├── .gitignore                     # Arquivos ignorados pelo Git
+└── README.md                      # Documentação do projeto
+```
+
+---
+
+## 3. Modelagem de Dados
 
 ### Diagrama Entidade-Relacionamento (DER)
 
@@ -99,26 +124,40 @@ INSERT IGNORE INTO admins (usuario, senha, ativo) VALUES
 
 ---
 
-## 3. Guia de Instalação e Execução
+## 4. Documentação da API REST
+
+| Método | Endpoint | Descrição | Corpo / Parâmetros |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/login` | Autenticação do administrador | `{ "usuario": "...", "senha": "..." }` |
+| `GET` | `/api/usuarios` | Lista usuários ativos ou filtra por nome/CPF | `?busca=...` ou `?nome=...` |
+| `GET` | `/api/usuarios/buscar-cpf` | Busca detalhes de um CPF para edição | `?cpf=...` |
+| `POST` | `/api/usuarios` | Insere novo usuário ativo | `{ "cpf": "...", "nome": "...", "profissao": "..." }` |
+| `PUT` | `/api/usuarios` | Atualiza dados de um usuário ativo | `{ "cpf": "...", "nome": "...", "profissao": "..." }` |
+| `POST` | `/api/usuarios/reativar` | Reativa registro inativo e atualiza dados | `{ "cpf": "...", "nome": "...", "profissao": "..." }` |
+| `DELETE` | `/api/usuarios` | Realiza *soft delete* (altera `ativo = 0`) | `{ "cpf": "..." }` |
+
+---
+
+## 5. Guia de Instalação e Execução
 
 ### Pré-requisitos
 - **Python 3.8+** instalado.
 - **MySQL Server 8.0+** em execução local na porta `3306`.
 
-### Passo 1: Clonar o Repositório Limpo
+### Passo 1: Clonar o Repositório
 ```bash
 git clone https://github.com/BatistaSec/projeto_dba_cc26.git
 cd projeto_dba_cc26
 ```
 
 ### Passo 2: Instalar Dependências Python
-Instale a biblioteca `mysql-connector-python`:
+Instale a biblioteca de conexão do MySQL:
 ```bash
 pip install mysql-connector-python
 ```
 
 ### Passo 3: Configurar Credenciais do MySQL
-Abra o arquivo `backend/config.py` e insira a senha do seu usuário `root` do MySQL:
+Abra o arquivo `backend/config.py` e configure as credenciais do seu ambiente MySQL:
 ```python
 DB_CONFIG = {
     "host":     "localhost",
@@ -127,10 +166,12 @@ DB_CONFIG = {
     "database": "controle_usuarios",
     "charset":  "utf8mb4",
 }
+
+PORTA_SERVIDOR = 8080
 ```
 
 ### Passo 4: Inicializar o Banco de Dados
-Execute o script DDL no MySQL para criar o banco de dados `controle_usuarios` e popular as tabelas:
+Execute o script DDL no MySQL para criar o banco de dados `controle_usuarios` e popular os dados iniciais:
 ```bash
 mysql -u root -p < backend/init_db.sql
 ```
@@ -150,3 +191,4 @@ http://localhost:8080
 
 - **Usuário Admin Padrão**: `admin`
 - **Senha**: `1234`
+

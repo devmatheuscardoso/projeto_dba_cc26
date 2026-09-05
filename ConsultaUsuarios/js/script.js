@@ -16,6 +16,10 @@ console.log("SCRIPT CARREGADO");
 
 const API_URL = window.location.origin + "/api";
 
+let cpfVerificadoAtualizar = "";
+let cpfVerificadoDeletar = "";
+
+
 
 /* =====================================================
    LOGIN
@@ -442,6 +446,10 @@ function carregarResultados() {
    BUSCAR USUÁRIO POR CPF (ETAPA 1 DA EDIÇÃO)
 ===================================================== */
 
+/* =====================================================
+   BUSCAR USUÁRIO POR CPF (ETAPA 1 DA EDIÇÃO)
+===================================================== */
+
 function buscarUsuarioPorCPF() {
 
     const campoCPF =
@@ -455,6 +463,18 @@ function buscarUsuarioPorCPF() {
 
     const mensagem =
         document.getElementById("mensagem-edicao");
+
+    const secaoDados =
+        document.getElementById("secao-dados-usuario");
+
+    const containerBotao =
+        document.getElementById("container-botao-atualizar");
+
+    const btnSalvar =
+        document.getElementById("btn-salvar-atualizar");
+
+    const btnReativar =
+        document.getElementById("btn-reativar-usuario");
 
 
     if (!campoCPF || !mensagem) {
@@ -473,6 +493,11 @@ function buscarUsuarioPorCPF() {
 
         mensagem.style.color = "red";
 
+        cpfVerificadoAtualizar = "";
+        cpfVerificadoDeletar = "";
+        if (secaoDados) secaoDados.style.display = "none";
+        if (containerBotao) containerBotao.style.display = "none";
+
         return;
 
     }
@@ -484,6 +509,11 @@ function buscarUsuarioPorCPF() {
             "CPF inválido. Verifique os números digitados.";
 
         mensagem.style.color = "red";
+
+        cpfVerificadoAtualizar = "";
+        cpfVerificadoDeletar = "";
+        if (secaoDados) secaoDados.style.display = "none";
+        if (containerBotao) containerBotao.style.display = "none";
 
         return;
 
@@ -501,6 +531,9 @@ function buscarUsuarioPorCPF() {
 
         if (dados.sucesso) {
 
+            cpfVerificadoAtualizar = cpf;
+            cpfVerificadoDeletar = cpf;
+
             if (campoNome) {
                 campoNome.value = dados.usuario.nome;
             }
@@ -509,12 +542,57 @@ function buscarUsuarioPorCPF() {
                 campoProfissao.value = dados.usuario.profissao;
             }
 
+            if (secaoDados) {
+                secaoDados.style.display = "block";
+            }
+
+            if (containerBotao) {
+                containerBotao.style.display = "flex";
+            }
+
+            if (btnSalvar) btnSalvar.style.display = "inline-block";
+            if (btnReativar) btnReativar.style.display = "none";
+
             mensagem.textContent =
                 "Usuário encontrado! Altere o nome e a profissão e clique em 'Salvar Alterações'.";
 
             mensagem.style.color = "green";
 
+        } else if (dados.inativo) {
+
+            cpfVerificadoAtualizar = cpf;
+
+            if (campoNome && dados.usuario) {
+                campoNome.value = dados.usuario.nome || "";
+            }
+
+            if (campoProfissao && dados.usuario) {
+                campoProfissao.value = dados.usuario.profissao || "";
+            }
+
+            if (secaoDados) {
+                secaoDados.style.display = "block";
+            }
+
+            if (containerBotao) {
+                containerBotao.style.display = "flex";
+            }
+
+            if (btnSalvar) btnSalvar.style.display = "none";
+            if (btnReativar) btnReativar.style.display = "inline-block";
+
+            mensagem.textContent =
+                dados.mensagem || "Usuário encontrado, mas inativo. Deseja reativá-lo?";
+
+            mensagem.style.color = "#d35400";
+
         } else {
+
+            cpfVerificadoAtualizar = "";
+            cpfVerificadoDeletar = "";
+
+            if (secaoDados) secaoDados.style.display = "none";
+            if (containerBotao) containerBotao.style.display = "none";
 
             mensagem.textContent = dados.mensagem;
 
@@ -526,6 +604,12 @@ function buscarUsuarioPorCPF() {
     .catch(function (erro) {
 
         console.error("Erro ao buscar por CPF:", erro);
+
+        cpfVerificadoAtualizar = "";
+        cpfVerificadoDeletar = "";
+
+        if (secaoDados) secaoDados.style.display = "none";
+        if (containerBotao) containerBotao.style.display = "none";
 
         mensagem.textContent =
             "Erro ao conectar com o servidor.";
@@ -552,6 +636,9 @@ function buscarUsuarioParaDeletar() {
     const secaoDeletar =
         document.getElementById("secao-dados-deletar");
 
+    const containerBotao =
+        document.getElementById("container-botao-deletar");
+
     const spanNome =
         document.getElementById("deletar-nome");
 
@@ -575,6 +662,11 @@ function buscarUsuarioParaDeletar() {
 
         mensagem.style.color = "red";
 
+        cpfVerificadoDeletar = "";
+        cpfVerificadoAtualizar = "";
+        if (secaoDeletar) secaoDeletar.style.display = "none";
+        if (containerBotao) containerBotao.style.display = "none";
+
         return;
 
     }
@@ -586,6 +678,11 @@ function buscarUsuarioParaDeletar() {
             "CPF inválido. Verifique os números digitados.";
 
         mensagem.style.color = "red";
+
+        cpfVerificadoDeletar = "";
+        cpfVerificadoAtualizar = "";
+        if (secaoDeletar) secaoDeletar.style.display = "none";
+        if (containerBotao) containerBotao.style.display = "none";
 
         return;
 
@@ -603,8 +700,15 @@ function buscarUsuarioParaDeletar() {
 
         if (dados.sucesso) {
 
+            cpfVerificadoDeletar = cpf;
+            cpfVerificadoAtualizar = cpf;
+
             if (secaoDeletar) {
                 secaoDeletar.style.display = "block";
+            }
+
+            if (containerBotao) {
+                containerBotao.style.display = "flex";
             }
 
             if (spanNome) {
@@ -616,14 +720,33 @@ function buscarUsuarioParaDeletar() {
             }
 
             mensagem.textContent =
-                "Usuário encontrado! Clique abaixo para inativar.";
+                "Usuário encontrado! Clique abaixo em 'Confirmar e Inativar Usuário' para prosseguir.";
 
             mensagem.style.color = "green";
 
+        } else if (dados.inativo) {
+
+            cpfVerificadoDeletar = "";
+            cpfVerificadoAtualizar = "";
+
+            if (secaoDeletar) secaoDeletar.style.display = "none";
+            if (containerBotao) containerBotao.style.display = "none";
+
+            mensagem.textContent = "Usuário já se encontra inativo.";
+
+            mensagem.style.color = "#d35400";
+
         } else {
+
+            cpfVerificadoDeletar = "";
+            cpfVerificadoAtualizar = "";
 
             if (secaoDeletar) {
                 secaoDeletar.style.display = "none";
+            }
+
+            if (containerBotao) {
+                containerBotao.style.display = "none";
             }
 
             mensagem.textContent = dados.mensagem;
@@ -636,6 +759,17 @@ function buscarUsuarioParaDeletar() {
     .catch(function (erro) {
 
         console.error("Erro ao buscar para deletar:", erro);
+
+        cpfVerificadoDeletar = "";
+        cpfVerificadoAtualizar = "";
+
+        if (secaoDeletar) {
+            secaoDeletar.style.display = "none";
+        }
+
+        if (containerBotao) {
+            containerBotao.style.display = "none";
+        }
 
         mensagem.textContent =
             "Erro ao conectar com o servidor.";
@@ -664,6 +798,9 @@ function adicionarUsuario() {
 
     const mensagem =
         document.getElementById("mensagem-edicao");
+
+    const btnRedirecionar =
+        document.getElementById("container-redirecionar-atualizar");
 
 
     if (
@@ -742,11 +879,27 @@ function adicionarUsuario() {
 
             mensagem.style.color = "green";
 
+            if (btnRedirecionar) btnRedirecionar.style.display = "none";
+
             limparCampos();
+
+        } else if (dados.inativo) {
+
+            mensagem.style.color = "#d35400";
+
+            if (btnRedirecionar) {
+                btnRedirecionar.style.display = "flex";
+            }
+
+            if (confirm("Usuário encontrado, mas inativo. Deseja ir para a página de atualização para reativá-lo?")) {
+                irParaAtualizar(cpf);
+            }
 
         } else {
 
             mensagem.style.color = "red";
+
+            if (btnRedirecionar) btnRedirecionar.style.display = "none";
 
         }
 
@@ -761,6 +914,134 @@ function adicionarUsuario() {
         mensagem.style.color = "red";
 
     });
+
+}
+
+
+/* =====================================================
+   REATIVAR USUÁRIO
+===================================================== */
+
+function reativarUsuario() {
+
+    const campoCPF =
+        document.getElementById("cpf");
+
+    const campoNome =
+        document.getElementById("nome");
+
+    const campoProfissao =
+        document.getElementById("profissao");
+
+    const mensagem =
+        document.getElementById("mensagem-edicao");
+
+
+    if (!campoCPF || !mensagem) {
+        return;
+    }
+
+
+    const cpf =
+        campoCPF.value.trim();
+
+    const nome =
+        campoNome ? campoNome.value.trim() : "";
+
+    const profissao =
+        campoProfissao ? campoProfissao.value.trim() : "";
+
+
+    if (cpf === "") {
+
+        mensagem.textContent =
+            "Digite o CPF para reativar.";
+
+        mensagem.style.color = "red";
+
+        return;
+
+    }
+
+
+    if (!validarCPF(cpf)) {
+
+        mensagem.textContent =
+            "CPF inválido. Verifique os números digitados.";
+
+        mensagem.style.color = "red";
+
+        return;
+
+    }
+
+
+    fetch(API_URL + "/usuarios/reativar", {
+
+        method: "POST",
+
+        headers: {
+            "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+            cpf: cpf,
+            nome: nome,
+            profissao: profissao
+        })
+
+    })
+    .then(function (resposta) {
+
+        return resposta.json();
+
+    })
+    .then(function (dados) {
+
+        mensagem.textContent = dados.mensagem;
+
+        if (dados.sucesso) {
+
+            mensagem.style.color = "green";
+
+            cpfVerificadoAtualizar = cpf;
+
+            const btnReativar = document.getElementById("btn-reativar-usuario");
+            const btnSalvar = document.getElementById("btn-salvar-atualizar");
+
+            if (btnReativar) btnReativar.style.display = "none";
+            if (btnSalvar) btnSalvar.style.display = "inline-block";
+
+        } else {
+
+            mensagem.style.color = "red";
+
+        }
+
+    })
+    .catch(function (erro) {
+
+        console.error("Erro ao reativar:", erro);
+
+        mensagem.textContent =
+            "Erro ao conectar com o servidor.";
+
+        mensagem.style.color = "red";
+
+    });
+
+}
+
+
+/* =====================================================
+   REDIRECIONAR PARA A TELA DE ATUALIZAR
+===================================================== */
+
+function irParaAtualizar(cpfParam) {
+
+    const cpf = cpfParam || (document.getElementById("cpf") ? document.getElementById("cpf").value.trim() : "");
+
+    window.location.href = "atualizar.html?cpf=" + encodeURIComponent(cpf);
 
 }
 
@@ -832,6 +1113,18 @@ function atualizarUsuario() {
     }
 
 
+    if (!cpfVerificadoAtualizar || cpf !== cpfVerificadoAtualizar) {
+
+        mensagem.textContent =
+            "Por segurança, clique em 'Buscar CPF' para verificar o usuário antes de salvar.";
+
+        mensagem.style.color = "red";
+
+        return;
+
+    }
+
+
     fetch(API_URL + "/usuarios", {
 
         method: "PUT",
@@ -854,15 +1147,29 @@ function atualizarUsuario() {
     })
     .then(function (dados) {
 
-        mensagem.textContent = dados.mensagem;
-
         if (dados.sucesso) {
+
+            mensagem.textContent = dados.mensagem || "Usuário atualizado com sucesso!";
 
             mensagem.style.color = "green";
 
             limparCampos();
 
+        } else if (dados.inativo) {
+
+            mensagem.textContent = dados.mensagem;
+
+            mensagem.style.color = "#d35400";
+
+            const btnReativar = document.getElementById("btn-reativar-usuario");
+            const btnSalvar = document.getElementById("btn-salvar-atualizar");
+
+            if (btnReativar) btnReativar.style.display = "inline-block";
+            if (btnSalvar) btnSalvar.style.display = "none";
+
         } else {
+
+            mensagem.textContent = dados.mensagem;
 
             mensagem.style.color = "red";
 
@@ -929,6 +1236,21 @@ function deletarUsuario() {
     }
 
 
+    const cpfDigitos = cpf.replace(/\D/g, "");
+    const verificadoDigitos = cpfVerificadoDeletar.replace(/\D/g, "");
+
+    if (!cpfVerificadoDeletar || cpfDigitos !== verificadoDigitos) {
+
+        mensagem.textContent =
+            "Por segurança, clique em 'Verificar CPF' ou 'Buscar CPF' primeiro antes de inativar.";
+
+        mensagem.style.color = "red";
+
+        return;
+
+    }
+
+
     const confirmar =
         confirm(
             `Tem certeza que deseja inativar o usuário com CPF: ${cpf}?`
@@ -960,20 +1282,17 @@ function deletarUsuario() {
     })
     .then(function (dados) {
 
-        mensagem.textContent = dados.mensagem;
-
         if (dados.sucesso) {
+
+            mensagem.textContent = "Usuário inativado com sucesso!";
 
             mensagem.style.color = "green";
 
             limparCampos();
 
-            const secaoDeletar = document.getElementById("secao-dados-deletar");
-            if (secaoDeletar) {
-                secaoDeletar.style.display = "none";
-            }
-
         } else {
+
+            mensagem.textContent = dados.mensagem;
 
             mensagem.style.color = "red";
 
@@ -1000,6 +1319,9 @@ function deletarUsuario() {
 
 function limparCampos() {
 
+    cpfVerificadoAtualizar = "";
+    cpfVerificadoDeletar = "";
+
     const cpf =
         document.getElementById("cpf");
 
@@ -1008,6 +1330,27 @@ function limparCampos() {
 
     const profissao =
         document.getElementById("profissao");
+
+    const secaoDados =
+        document.getElementById("secao-dados-usuario");
+
+    const containerBotaoAtualizar =
+        document.getElementById("container-botao-atualizar");
+
+    const btnSalvar =
+        document.getElementById("btn-salvar-atualizar");
+
+    const btnReativar =
+        document.getElementById("btn-reativar-usuario");
+
+    const btnRedirecionar =
+        document.getElementById("container-redirecionar-atualizar");
+
+    const secaoDeletar =
+        document.getElementById("secao-dados-deletar");
+
+    const containerBotaoDeletar =
+        document.getElementById("container-botao-deletar");
 
 
     if (cpf) {
@@ -1022,6 +1365,35 @@ function limparCampos() {
 
     if (profissao) {
         profissao.value = "";
+    }
+
+
+    if (secaoDados) {
+        secaoDados.style.display = "none";
+    }
+
+    if (containerBotaoAtualizar) {
+        containerBotaoAtualizar.style.display = "none";
+    }
+
+    if (btnSalvar) {
+        btnSalvar.style.display = "inline-block";
+    }
+
+    if (btnReativar) {
+        btnReativar.style.display = "none";
+    }
+
+    if (btnRedirecionar) {
+        btnRedirecionar.style.display = "none";
+    }
+
+    if (secaoDeletar) {
+        secaoDeletar.style.display = "none";
+    }
+
+    if (containerBotaoDeletar) {
+        containerBotaoDeletar.style.display = "none";
     }
 
 }
@@ -1041,6 +1413,19 @@ document.addEventListener(
             campoCPF.addEventListener("input", function () {
                 aplicarMascaraCPF(this);
             });
+        }
+
+        // Verifica parâmetro de URL ?cpf=...
+        const urlParams = new URLSearchParams(window.location.search);
+        const cpfParam = urlParams.get("cpf");
+
+        if (cpfParam && campoCPF) {
+            campoCPF.value = cpfParam;
+            aplicarMascaraCPF(campoCPF);
+
+            if (typeof buscarUsuarioPorCPF === "function" && document.getElementById("secao-dados-usuario")) {
+                buscarUsuarioPorCPF();
+            }
         }
 
         carregarResultados();
