@@ -382,6 +382,7 @@ http://localhost:8080
 *Visualização do saldo atual de equipamentos e ponto de reposição (`estoque_minimo`).*
 #### 3. Registro de Retirada e Devolução
 ![Movimentação Retirada](docs/prints/03_select_retiradas.png)
+![Controle de Devolução](docs/prints/03b_select_devolucao.png)
 *Histórico de movimentações na tabela `itens_retirada` com controle de status (`RETIRADO` / `DEVOLVIDO`).*
 #### 4. Execução da Interface Web
 ![Interface do Sistema](docs/prints/04_interface_web.png)
