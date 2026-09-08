@@ -187,14 +187,14 @@ CREATE TABLE IF NOT EXISTS funcionarios (
     profissao_id INT NOT NULL,
     setor_id INT NOT NULL,
     ativo TINYINT(1) NOT NULL DEFAULT 1,
+
     INDEX idx_funcionario_nome (nome),
-    INDEX idx_funcionario_cpf (cpf),
-    
+
     CONSTRAINT fk_funcionarios_profissao
         FOREIGN KEY (profissao_id)
         REFERENCES profissoes(id)
         ON DELETE RESTRICT ON UPDATE CASCADE,
-    
+
     CONSTRAINT fk_funcionario_setor
         FOREIGN KEY (setor_id)
         REFERENCES setores(id)
@@ -214,8 +214,9 @@ CREATE TABLE IF NOT EXISTS epis (
     quantidade INT NOT NULL DEFAULT 0,
     estoque_minimo INT NOT NULL DEFAULT 0,
     ativo TINYINT(1) NOT NULL DEFAULT 1,
-    INDEX idx_epi_nome (nome),
-    INDEX idx_epi_codigo (codigo)
+
+    INDEX idx_epi_nome (nome)
+
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 /* =====================================================
@@ -226,7 +227,7 @@ CREATE TABLE IF NOT EXISTS retiradas (
     funcionario_id INT NOT NULL,
     data_retirada DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     observacao VARCHAR(255),
-    
+
     CONSTRAINT fk_retirada_funcionario
         FOREIGN KEY (funcionario_id)
         REFERENCES funcionarios(id)
@@ -244,12 +245,14 @@ CREATE TABLE IF NOT EXISTS itens_retirada (
     data_devolucao DATETIME,
     status ENUM('RETIRADO', 'DEVOLVIDO', 'ATRASADO') NOT NULL DEFAULT 'RETIRADO',
     observacao VARCHAR(255),
+
     INDEX idx_item_status (status),
-    
+
     CONSTRAINT fk_item_retirada
         FOREIGN KEY (retirada_id)
         REFERENCES retiradas(id)
         ON DELETE CASCADE ON UPDATE CASCADE,
+
     CONSTRAINT fk_item_epi
         FOREIGN KEY (epi_id)
         REFERENCES epis(id)
@@ -269,6 +272,7 @@ CREATE TABLE IF NOT EXISTS admins (
 /* =====================================================
    CARGA INICIAL DE DADOS (DML)
 ===================================================== */
+
 INSERT INTO profissoes (nome, descricao) VALUES
     ('Operador de Produção', 'Responsável por atividades relacionadas à produção'),
     ('Técnico de Segurança', 'Responsável pelas atividades de segurança do trabalho'),
@@ -283,20 +287,85 @@ INSERT INTO setores (nome, descricao) VALUES
     ('Qualidade', 'Setor responsável pelo controle de qualidade'),
     ('Segurança do Trabalho', 'Setor responsável pela segurança dos funcionários');
 
-INSERT INTO funcionarios (matricula, nome, cpf, email, telefone, profissao_id, setor_id) VALUES
-    ('FUNC-001', 'João da Silva', '123.456.789-01', 'joao.silva@email.com', '(11) 99999-0001', (SELECT id FROM profissoes WHERE nome = 'Operador de Produção'), (SELECT id FROM setores WHERE nome = 'Produção')),
-    ('FUNC-002', 'Pedro Santos', '234.567.890-12', 'pedro.santos@email.com', '(11) 99999-0002', (SELECT id FROM profissoes WHERE nome = 'Técnico de Segurança'), (SELECT id FROM setores WHERE nome = 'Segurança do Trabalho')),
-    ('FUNC-003', 'Carlos Oliveira', '345.678.901-23', 'carlos.oliveira@email.com', '(11) 99999-0003', (SELECT id FROM profissoes WHERE nome = 'Almoxarife'), (SELECT id FROM setores WHERE nome = 'Almoxarifado')),
-    ('FUNC-004', 'Marcos Almeida', '456.789.012-34', 'marcos.almeida@email.com', '(11) 99999-0004', (SELECT id FROM profissoes WHERE nome = 'Supervisor de Produção'), (SELECT id FROM setores WHERE nome = 'Produção')),
-    ('FUNC-005', 'Lucas Souza', '567.890.123-45', 'lucas.souza@email.com', '(11) 99999-0005', (SELECT id FROM profissoes WHERE nome = 'Técnico de Manutenção'), (SELECT id FROM setores WHERE nome = 'Manutenção'));
+INSERT INTO funcionarios
+    (matricula, nome, cpf, email, telefone, profissao_id, setor_id)
+VALUES
+    (
+        'FUNC-001',
+        'João da Silva',
+        '123.456.789-01',
+        'joao.silva@email.com',
+        '(11) 99999-0001',
+        (SELECT id FROM profissoes
+         WHERE nome = 'Operador de Produção'),
+        (SELECT id FROM setores
+         WHERE nome = 'Produção')
+    ),
+    (
+        'FUNC-002',
+        'Pedro Santos',
+        '234.567.890-12',
+        'pedro.santos@email.com',
+        '(11) 99999-0002',
+        (SELECT id FROM profissoes
+         WHERE nome = 'Técnico de Segurança'),
+        (SELECT id FROM setores
+         WHERE nome = 'Segurança do Trabalho')
+    ),
+    (
+        'FUNC-003',
+        'Carlos Oliveira',
+        '345.678.901-23',
+        'carlos.oliveira@email.com',
+        '(11) 99999-0003',
+        (SELECT id FROM profissoes
+         WHERE nome = 'Almoxarife'),
+        (SELECT id FROM setores
+         WHERE nome = 'Almoxarifado')
+    ),
+    (
+        'FUNC-004',
+        'Marcos Almeida',
+        '456.789.012-34',
+        'marcos.almeida@email.com',
+        '(11) 99999-0004',
+        (SELECT id FROM profissoes
+         WHERE nome = 'Supervisor de Produção'),
+        (SELECT id FROM setores
+         WHERE nome = 'Produção')
+    ),
+    (
+        'FUNC-005',
+        'Lucas Souza',
+        '567.890.123-45',
+        'lucas.souza@email.com',
+        '(11) 99999-0005',
+        (SELECT id FROM profissoes
+         WHERE nome = 'Técnico de Manutenção'),
+        (SELECT id FROM setores
+         WHERE nome = 'Manutenção')
+    );
 
-INSERT INTO epis (codigo, nome, descricao, ca, tamanho, quantidade, estoque_minimo) VALUES
-    ('EPI-001', 'Capacete de Segurança', 'Capacete para proteção da cabeça', '12345', 'Único', 20, 5),
-    ('EPI-002', 'Óculos de Proteção', 'Óculos para proteção dos olhos', '23456', 'Único', 30, 10),
-    ('EPI-003', 'Luva de Proteção', 'Luva para proteção das mãos', '34567', 'M', 50, 10),
-    ('EPI-004', 'Botina de Segurança', 'Botina para proteção dos pés', '45678', '40', 15, 5),
-    ('EPI-005', 'Protetor Auricular', 'Proteção contra ruídos', '56789', 'Único', 25, 5),
-    ('EPI-006', 'Máscara Respiratória', 'Proteção respiratória contra partículas', '67890', 'Único', 40, 10);
+INSERT INTO epis
+    (codigo, nome, descricao, ca, tamanho, quantidade, estoque_minimo)
+VALUES
+    ('EPI-001', 'Capacete de Segurança',
+     'Capacete para proteção da cabeça', '12345', 'Único', 20, 5),
+
+    ('EPI-002', 'Óculos de Proteção',
+     'Óculos para proteção dos olhos', '23456', 'Único', 30, 10),
+
+    ('EPI-003', 'Luva de Proteção',
+     'Luva para proteção das mãos', '34567', 'M', 50, 10),
+
+    ('EPI-004', 'Botina de Segurança',
+     'Botina para proteção dos pés', '45678', '40', 15, 5),
+
+    ('EPI-005', 'Protetor Auricular',
+     'Proteção contra ruídos', '56789', 'Único', 25, 5),
+
+    ('EPI-006', 'Máscara Respiratória',
+     'Proteção respiratória contra partículas', '67890', 'Único', 40, 10);
 
 INSERT INTO admins (usuario, senha) VALUES
     ('admin', '1234');
