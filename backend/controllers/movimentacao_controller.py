@@ -16,21 +16,31 @@ class MovimentacaoController:
         if not termo:
             return {"sucesso": False, "mensagem": "Informe o CPF ou Matrícula do funcionário."}, 400
 
-        cpf_fmt = formatar_cpf(cpf) if validar_cpf(cpf) else cpf
-        cpf_num = re.sub(r"\D", "", cpf) if cpf else ""
+        cpf_fmt = formatar_cpf(termo) if validar_cpf(termo) else termo
+        cpf_num = re.sub(r"\D", "", termo)
 
         try:
-            sql = """
+            if termo.isdigit():
+                cond_id = " OR f.id = %s"
+                params = (cpf_fmt, cpf_num if cpf_num else termo, termo, int(termo))
+            else:
+                cond_id = ""
+                params = (cpf_fmt, cpf_num if cpf_num else termo, termo)
+
+            sql = f"""
                 SELECT ir.id as item_retirada_id, e.id as epi_id, e.nome, e.codigo, ir.quantidade, r.data_retirada
                 FROM itens_retirada ir
                 JOIN retiradas r ON ir.retirada_id = r.id
                 JOIN epis e ON ir.epi_id = e.id
                 JOIN funcionarios f ON r.funcionario_id = f.id
-                WHERE (f.cpf = %s OR REPLACE(REPLACE(f.cpf, '.', ''), '-', '') = %s OR f.matricula = %s OR f.id = %s) 
+                WHERE (f.cpf = %s OR REPLACE(REPLACE(f.cpf, '.', ''), '-', '') = %s OR f.matricula = %s{cond_id}) 
                   AND ir.status = 'RETIRADO'
                 ORDER BY r.data_retirada DESC
             """
-            resultado = Database.executar_consulta(sql, (cpf_fmt, cpf_num if cpf_num else termo, termo, termo))
+            resultado = Database.executar_consulta(sql, params)
+            for item in resultado:
+                if item.get("data_retirada") is not None:
+                    item["data_retirada"] = str(item["data_retirada"])
             return {"sucesso": True, "itens": resultado}, 200
         except Exception as e:
             print(f"[ERRO LISTAR RETIRADAS] {e}")
@@ -44,13 +54,13 @@ class MovimentacaoController:
         funcionario_id = dados.get("funcionario_id")
         itens = dados.get("itens", [])
 
-        termo = cpf or matricula or funcionario_id
+        termo = str(cpf or matricula or funcionario_id or "").strip()
 
         if not termo or not itens:
-            return {"sucesso": False, "mensagem": "Dados inválidos."}, 400
+            return {"sucesso": False, "mensagem": "Dados de retirada inválidos."}, 400
 
-        cpf_fmt = formatar_cpf(cpf) if validar_cpf(cpf) else cpf
-        cpf_num = re.sub(r"\D", "", cpf) if cpf else ""
+        cpf_fmt = formatar_cpf(termo) if validar_cpf(termo) else termo
+        cpf_num = re.sub(r"\D", "", termo)
 
         conexao = None
         cursor = None
@@ -64,9 +74,16 @@ class MovimentacaoController:
                 cursor = conexao.cursor()
 
             # Busca ID do funcionário e verifica se está ativo
-            q_user = "SELECT id, ativo FROM funcionarios WHERE (cpf = %s OR REPLACE(REPLACE(cpf, '.', ''), '-', '') = %s OR matricula = %s OR id = %s)"
+            if termo.isdigit():
+                cond_id = " OR id = %s"
+                params = (cpf_fmt, cpf_num if cpf_num else termo, termo, int(termo))
+            else:
+                cond_id = ""
+                params = (cpf_fmt, cpf_num if cpf_num else termo, termo)
+
+            q_user = f"SELECT id, ativo FROM funcionarios WHERE (cpf = %s OR REPLACE(REPLACE(cpf, '.', ''), '-', '') = %s OR matricula = %s{cond_id})"
             if DB_DRIVER in ["sqlite", "mssql"]: q_user = q_user.replace("%s", "?")
-            cursor.execute(q_user, (cpf_fmt, cpf_num if cpf_num else termo, termo, termo))
+            cursor.execute(q_user, params)
             user_raw = cursor.fetchone()
 
             if not user_raw:
@@ -169,11 +186,11 @@ class MovimentacaoController:
             if item["status"] == "DEVOLVIDO":
                 return {"sucesso": False, "mensagem": "Este item já foi totalmente devolvido."}, 400
 
-            qtd_original = item["quantidade"]
+            qtd_original = int(item["quantidade"])
             epi_id = item["epi_id"]
 
             if qtd_devolvida > qtd_original:
-                return {"sucesso": False, "mensagem": "Quantidade devolvida maior que a retirada."}, 400
+                return {"sucesso": False, "mensagem": "Quantidade devolvida maior que a quantidade pendente."}, 400
 
             if qtd_devolvida == qtd_original:
                 q_upd_status = "UPDATE itens_retirada SET status = 'DEVOLVIDO', data_devolucao = CURRENT_TIMESTAMP WHERE id = %s"
@@ -190,7 +207,12 @@ class MovimentacaoController:
                 cursor.execute(q_sel_ret, (item_retirada_id,))
                 
                 ret_raw = cursor.fetchone()
-                retirada_id = ret_raw["retirada_id"] if DB_DRIVER == "mysql" else (dict(ret_raw)["retirada_id"] if DB_DRIVER == "sqlite" else dict(zip([c[0] for c in cursor.description], ret_raw))["retirada_id"])
+                if isinstance(ret_raw, dict):
+                    retirada_id = ret_raw["retirada_id"]
+                elif hasattr(ret_raw, "keys"):
+                    retirada_id = dict(ret_raw)["retirada_id"]
+                else:
+                    retirada_id = ret_raw[0]
                 
                 q_ins_dev = "INSERT INTO itens_retirada (retirada_id, epi_id, quantidade, status, data_devolucao) VALUES (%s, %s, %s, 'DEVOLVIDO', CURRENT_TIMESTAMP)"
                 if DB_DRIVER in ["sqlite", "mssql"]: q_ins_dev = q_ins_dev.replace("%s", "?")

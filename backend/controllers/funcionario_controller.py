@@ -294,26 +294,37 @@ class UsuarioController:
 
     @staticmethod
     def inativar(dados):
-        cpf = dados.get("cpf", "").strip()
-        matricula = dados.get("matricula", "").strip()
+        cpf = str(dados.get("cpf") or "").strip()
+        matricula = str(dados.get("matricula") or "").strip()
 
         termo = cpf or matricula
         if not termo:
             return {"sucesso": False, "mensagem": "Informe o CPF ou Matrícula."}, 400
 
-        cpf_fmt = formatar_cpf(cpf) if validar_cpf(cpf) else cpf
-        cpf_num = re.sub(r"\D", "", cpf)
+        termo_fmt = formatar_cpf(termo) if validar_cpf(termo) else termo
+        termo_num = re.sub(r"\D", "", termo)
 
         try:
-            linhas_afetadas = Database.executar_consulta(
-                "UPDATE funcionarios SET ativo = 0 WHERE (cpf = %s OR REPLACE(REPLACE(cpf, '.', ''), '-', '') = %s OR matricula = %s)",
-                (cpf_fmt, cpf_num if cpf_num else cpf, matricula),
-                retornar_dados=False
-            )
+            conds = ["cpf = %s", "matricula = %s"]
+            params = [termo_fmt, termo]
+            if termo.isdigit():
+                conds.append("id = %s")
+                params.append(int(termo))
+            if termo_num:
+                conds.append("REPLACE(REPLACE(cpf, '.', ''), '-', '') = %s")
+                params.append(termo_num)
+
+            sql = f"UPDATE funcionarios SET ativo = 0 WHERE ({' OR '.join(conds)}) AND ativo = 1"
+            linhas_afetadas = Database.executar_consulta(sql, tuple(params), retornar_dados=False)
 
             if linhas_afetadas > 0:
                 return {"sucesso": True, "mensagem": "Funcionário inativado com sucesso."}, 200
             else:
+                sql_chk = f"SELECT id, ativo FROM funcionarios WHERE ({' OR '.join(conds)})"
+                check = Database.executar_consulta(sql_chk, tuple(params))
+                if check:
+                    if check[0]["ativo"] == 0:
+                        return {"sucesso": True, "mensagem": "Funcionário já se encontra inativo."}, 200
                 return {"sucesso": False, "mensagem": "Funcionário não encontrado."}, 404
 
         except Exception as e:

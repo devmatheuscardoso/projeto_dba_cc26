@@ -555,24 +555,26 @@ function deletarUsuario() {
     if (!campoCPF || !mensagem) return;
     const cpf = campoCPF.value.trim();
 
-    if (cpf === "") {
+    if (cpf === "" && !cpfVerificadoDeletar) {
         mensagem.textContent = "Digite o CPF ou Matrícula do funcionário a inativar.";
         mensagem.style.color = "red";
         return;
     }
 
-    const confirmar = confirm(`Tem certeza que deseja inativar o funcionário (${cpf})?`);
+    const valorParaEnviar = cpfVerificadoDeletar || cpf;
+
+    const confirmar = confirm(`Tem certeza que deseja inativar o funcionário (${valorParaEnviar})?`);
     if (!confirmar) return;
 
     fetch(API_URL + "/funcionarios", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cpf: cpf, matricula: cpf })
+        body: JSON.stringify({ cpf: valorParaEnviar, matricula: valorParaEnviar })
     })
     .then(r => r.json())
     .then(dados => {
         if (dados.sucesso) {
-            mensagem.textContent = "Funcionário inativado com sucesso!";
+            mensagem.textContent = dados.mensagem || "Funcionário inativado com sucesso!";
             mensagem.style.color = "green";
             limparCampos();
         } else {
@@ -711,9 +713,13 @@ function realizarRetirada() {
 ===================================================== */
 
 function buscarItensParaDevolucao() {
-    const cpf = document.getElementById("cpf-devolucao").value.trim();
+    const cpfInput = document.getElementById("cpf-devolucao");
     const select = document.getElementById("epi-devolucao");
     const mensagem = document.getElementById("mensagem-devolucao");
+    const inputQtd = document.getElementById("quantidade-devolucao");
+
+    if (!cpfInput || !select || !mensagem) return;
+    const cpf = cpfInput.value.trim();
 
     if (cpf === "") {
         mensagem.textContent = "Digite o CPF ou Matrícula do funcionário.";
@@ -722,6 +728,7 @@ function buscarItensParaDevolucao() {
     }
 
     select.innerHTML = '<option value="">Carregando...</option>';
+    if (inputQtd) inputQtd.value = "";
 
     fetch(API_URL + "/retiradas?cpf=" + encodeURIComponent(cpf))
     .then(r => r.json())
@@ -733,7 +740,7 @@ function buscarItensParaDevolucao() {
             return;
         }
 
-        if (dados.itens.length === 0) {
+        if (!dados.itens || dados.itens.length === 0) {
             mensagem.textContent = "Nenhum EPI pendente de devolução para este funcionário.";
             mensagem.style.color = "orange";
             select.innerHTML = '<option value="">Nenhum item pendente</option>';
@@ -745,44 +752,65 @@ function buscarItensParaDevolucao() {
         select.innerHTML = '<option value="">Selecione o EPI...</option>';
         
         dados.itens.forEach(item => {
-            const dataRetirada = new Date(item.data_retirada).toLocaleDateString("pt-BR");
+            const dataRetirada = item.data_retirada ? new Date(item.data_retirada).toLocaleDateString("pt-BR") : "-";
             select.innerHTML += `<option value="${item.item_retirada_id}" data-max="${item.quantidade}">
                 ${item.nome} (Qtd: ${item.quantidade}) - Retirado em: ${dataRetirada}
             </option>`;
         });
 
-        select.addEventListener('change', function() {
+        select.onchange = function() {
             const opt = this.options[this.selectedIndex];
-            const max = opt.getAttribute('data-max');
-            const inputQtd = document.getElementById("quantidade-devolucao");
+            const max = opt ? opt.getAttribute('data-max') : null;
             if (max) {
-                inputQtd.max = max;
-                inputQtd.value = max;
+                if (inputQtd) {
+                    inputQtd.max = max;
+                    inputQtd.value = max;
+                }
             } else {
-                inputQtd.value = "";
+                if (inputQtd) inputQtd.value = "";
             }
-        });
+        };
+
+        if (dados.itens.length === 1) {
+            select.selectedIndex = 1;
+            select.onchange();
+        }
     })
     .catch(err => {
-        mensagem.textContent = "Erro de conexão.";
+        console.error("Erro ao buscar retiradas:", err);
+        mensagem.textContent = "Erro de conexão com o servidor.";
         mensagem.style.color = "red";
         select.innerHTML = '<option value="">Erro ao carregar itens</option>';
     });
 }
 
 function realizarDevolucao() {
-    const itemRetiradaId = document.getElementById("epi-devolucao").value;
-    const quantidade = Number(document.getElementById("quantidade-devolucao").value);
+    const selectEPI = document.getElementById("epi-devolucao");
+    const inputQtd = document.getElementById("quantidade-devolucao");
     const mensagem = document.getElementById("mensagem-devolucao");
 
-    if (itemRetiradaId === "") {
+    if (!selectEPI || !inputQtd || !mensagem) return;
+
+    const itemRetiradaId = selectEPI.value;
+    const quantidade = Number(inputQtd.value);
+
+    if (!itemRetiradaId) {
         mensagem.textContent = "Selecione o EPI para devolução (busque o funcionário primeiro).";
         mensagem.style.color = "red";
         return;
     }
 
-    if (quantidade <= 0) {
-        mensagem.textContent = "Digite uma quantidade válida.";
+    const optSelecionada = selectEPI.options[selectEPI.selectedIndex];
+    const maxPermitido = optSelecionada ? Number(optSelecionada.getAttribute('data-max')) : 0;
+
+    if (isNaN(quantidade) || quantidade <= 0) {
+        mensagem.textContent = "Digite uma quantidade válida (maior que 0).";
+        mensagem.style.color = "red";
+        return;
+    }
+
+    if (maxPermitido > 0 && quantidade > maxPermitido) {
+        mensagem.textContent = `A quantidade não pode exceder o total retirado (${maxPermitido}).`;
         mensagem.style.color = "red";
         return;
     }
@@ -797,13 +825,15 @@ function realizarDevolucao() {
         mensagem.textContent = dados.mensagem;
         if (dados.sucesso) {
             mensagem.style.color = "green";
+            inputQtd.value = "";
             buscarItensParaDevolucao();
         } else {
             mensagem.style.color = "red";
         }
     })
     .catch(err => {
-        mensagem.textContent = "Erro de conexão.";
+        console.error("Erro ao realizar devolução:", err);
+        mensagem.textContent = "Erro de conexão com o servidor.";
         mensagem.style.color = "red";
     });
 }

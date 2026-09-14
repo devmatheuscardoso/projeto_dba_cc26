@@ -21,7 +21,7 @@ from controllers.aux_controller import AuxController
 class ManipuladorHTTP(BaseHTTPRequestHandler):
 
     def responder_json(self, dados, codigo=200):
-        corpo = json.dumps(dados, ensure_ascii=False).encode("utf-8")
+        corpo = json.dumps(dados, ensure_ascii=False, default=str).encode("utf-8")
         self.send_response(codigo)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(corpo)))
