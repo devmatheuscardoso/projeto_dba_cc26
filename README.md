@@ -416,22 +416,41 @@ pip install pyodbc                  # Para SQL Server
 # Não é necessário instalar nada extra para SQLite.
 ```
 
-### Passo 3: Configurar Credenciais e Multi-DB
+### Passo 3: Configurar Credenciais e Multi-DB (.env)
 Para não expor senhas no código, o sistema utiliza variáveis de ambiente de forma unificada.
 
-1. Na pasta `backend/`, crie um arquivo chamado `.env`.
-2. Dentro deste arquivo, configure o `DB_DRIVER` e as credenciais correspondentes:
-   ```env
-   # mysql, sqlite ou mssql
-   DB_DRIVER=mysql
-   
-   MYSQL_HOST=localhost
-   MYSQL_PORT=3306
-   MYSQL_USER=root
-   MYSQL_PASSWORD=SuaSenhaAqui
-   MYSQL_DATABASE=controle_usuarios
-   ```
-O arquivo `.env` está no `.gitignore`. O `config.py` carregará o banco escolhido e instanciará a fábrica de conexão.
+Na pasta `backend/`, crie o arquivo `.env` e escolha uma das opções abaixo:
+
+#### Opção A: MySQL (Recomendado / Padrão)
+```env
+DB_DRIVER=mysql
+
+MYSQL_HOST=localhost
+MYSQL_PORT=3306
+MYSQL_USER=root
+MYSQL_PASSWORD=SuaSenhaAqui
+MYSQL_DATABASE=controle_funcionarios
+```
+
+#### Opção B: SQLite (Zero-Config / Sem necessidade de servidor)
+```env
+DB_DRIVER=sqlite
+SQLITE_FILE=controle_funcionarios.db
+```
+
+#### Opção C: Microsoft SQL Server (MSSQL)
+```env
+DB_DRIVER=mssql
+
+MSSQL_SERVER=localhost
+MSSQL_PORT=1433
+MSSQL_USER=sa
+MSSQL_PASSWORD=SuaSenhaAqui
+MSSQL_DATABASE=controle_funcionarios
+MSSQL_DRIVER=ODBC Driver 17 for SQL Server
+```
+
+O arquivo `.env` está no `.gitignore`. O `config.py` carregará automaticamente o banco escolhido e instanciará a fábrica de conexão.
 
 ### Passo 4: Inicializar o Banco de Dados
 Certifique-se de salvar o script SQL fornecido na Seção 4 no arquivo `backend/init_db.sql` e executá-lo no seu banco de dados favorito para criar as tabelas e a carga inicial.
