@@ -481,3 +481,25 @@ As telas abaixo demonstram o sistema final com a interface moderna (HTML5 + CSS3
 #### 7. Devolução de EPI
 ![Devolução de EPI](docs/screenshot_06_devolucao.png)
 *Histórico de retiradas pendentes buscado pelo CPF, com controle de status (RETIRADO → DEVOLVIDO).*
+
+---
+
+### 7.2 Evidências de Consultas no Banco de Dados (DBA - SQL)
+
+Abaixo estão os comprovantes de execução das consultas SQL no Banco de Dados MySQL para verificação da integridade das tabelas e relacionamentos:
+
+#### 1. Consulta à Tabela de Funcionários (`SELECT * FROM funcionarios`)
+![Select Funcionários](docs/prints/01_select_funcionarios.png)
+*Execução de consulta relacional trazendo a listagem de colaboradores cadastrados.*
+
+#### 2. Consulta à Tabela de EPIs (`SELECT * FROM epis`)
+![Select EPIs](docs/prints/02_select_epis.png)
+*Consulta ao inventário e controle de estoque de Equipamentos de Proteção Individual.*
+
+#### 3. Registros de Retiradas (`SELECT * FROM retiradas`)
+![Select Retiradas](docs/prints/03_select_retiradas.png)
+*Listagem de movimentações de entrega de EPIs vinculadas aos colaboradores.*
+
+#### 4. Controle e Atualização de Devoluções de EPIs
+![Select Devoluções](docs/prints/03b_select_devolucao.png)
+*Verificação dos itens com controle de status de devolução e reposição ao estoque.*
