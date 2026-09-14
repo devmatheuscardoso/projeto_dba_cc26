@@ -121,7 +121,12 @@ function mostrarSenha() {
 
 function aplicarMascaraCPF(input) {
     if (!input) return;
-    let valor = input.value.replace(/\D/g, "");
+    let raw = input.value;
+    // Se contiver letras (ex: FUNC-001), não aplica máscara de CPF numérica
+    if (/[a-zA-Z]/.test(raw)) {
+        return;
+    }
+    let valor = raw.replace(/\D/g, "");
     if (valor.length > 11) valor = valor.slice(0, 11);
 
     if (valor.length > 9) {

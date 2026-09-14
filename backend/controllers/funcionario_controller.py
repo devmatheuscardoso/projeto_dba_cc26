@@ -122,18 +122,25 @@ class UsuarioController:
         termo_num = re.sub(r"\D", "", termo)
 
         try:
-            resultado = Database.executar_consulta(
-                """
+            conds = ["f.cpf = %s", "f.matricula = %s"]
+            params = [termo_fmt, termo]
+            if termo.isdigit():
+                conds.append("f.id = %s")
+                params.append(int(termo))
+            if termo_num:
+                conds.append("REPLACE(REPLACE(f.cpf, '.', ''), '-', '') = %s")
+                params.append(termo_num)
+
+            sql = f"""
                 SELECT f.id, f.matricula, f.nome, f.cpf, f.email, f.telefone, 
                        f.profissao_id, COALESCE(p.nome, '') AS profissao_nome, COALESCE(p.nome, '') AS profissao,
                        f.setor_id, COALESCE(s.nome, '') AS setor_nome, COALESCE(s.nome, '') AS setor, f.ativo
                 FROM funcionarios f
                 LEFT JOIN profissoes p ON f.profissao_id = p.id
                 LEFT JOIN setores s ON f.setor_id = s.id
-                WHERE (f.cpf = %s OR REPLACE(REPLACE(f.cpf, '.', ''), '-', '') = %s OR f.matricula = %s)
-                """,
-                (termo_fmt, termo_num if termo_num else termo, termo)
-            )
+                WHERE ({' OR '.join(conds)})
+            """
+            resultado = Database.executar_consulta(sql, tuple(params))
 
             if resultado:
                 user = resultado[0]
@@ -180,7 +187,13 @@ class UsuarioController:
         cpf_fmt = formatar_cpf(cpf)
         cpf_num = re.sub(r"\D", "", cpf)
 
-        if not matricula:
+        if matricula:
+            num_part = re.sub(r"\D", "", matricula)
+            if num_part:
+                matricula = f"FUNC-{int(num_part):03d}"
+            else:
+                matricula = matricula.upper()
+        else:
             ult = Database.executar_consulta("SELECT MAX(id) as max_id FROM funcionarios")
             prox_id = (ult[0]["max_id"] or 0) + 1 if ult else 1
             matricula = f"FUNC-{prox_id:03d}"
