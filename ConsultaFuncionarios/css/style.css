@@ -1,0 +1,684 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* =====================================================
+   VARIÁVEIS DE DESIGN SYSTEM (MODERN CORPORATE)
+===================================================== */
+:root {
+    --bg-color: #f4f7f9;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    
+    --primary-color: #2563eb;
+    --primary-hover: #1d4ed8;
+    
+    --secondary-color: #334155;
+    --secondary-hover: #1e293b;
+    
+    --success-color: #10b981;
+    --success-hover: #059669;
+    
+    --danger-color: #ef4444;
+    --danger-hover: #dc2626;
+    
+    --warning-color: #f59e0b;
+    --warning-hover: #d97706;
+    
+    --purple-color: #8b5cf6;
+    --purple-hover: #7c3aed;
+
+    --surface-color: #ffffff;
+    --surface-border: #e2e8f0;
+    
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    
+    --transition-fast: 0.15s ease-in-out;
+    --transition-normal: 0.3s ease;
+}
+
+/* =====================================================
+   CONFIGURAÇÕES GERAIS
+===================================================== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    color: var(--text-primary);
+    background-color: var(--bg-color);
+
+    /* Camadas de fundo:
+       1. Overlay gradiente azul-verde suave para manter legibilidade
+       2. Segundo gradiente radial animado para profundidade
+       3. A foto de EPIs de fundo */
+    background-image:
+        linear-gradient(
+            135deg,
+            rgba(244, 247, 249, 0.92) 0%,
+            rgba(241, 245, 249, 0.88) 50%,
+            rgba(240, 249, 255, 0.92) 100%
+        ),
+        radial-gradient(circle at 0% 0%,   rgba(37, 99, 235, 0.12) 0%, transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(16, 185, 129, 0.10) 0%, transparent 55%),
+        url('../imagem/fundo-epi.png');
+
+    background-size:
+        100% 100%,
+        200% 200%,
+        200% 200%,
+        cover;
+
+    background-position:
+        center,
+        0% 50%,
+        100% 50%,
+        center center;
+
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+
+    animation: floatBackground 14s ease infinite;
+    line-height: 1.5;
+}
+
+/* =====================================================
+   BARRA SUPERIOR (HEADER)
+===================================================== */
+.barra-superior {
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--surface-border);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: var(--shadow-sm);
+}
+
+.titulo-sistema {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.5px;
+}
+
+.controles-janela {
+    display: flex;
+    gap: 20px;
+    color: var(--text-secondary);
+}
+
+/* =====================================================
+   BOTÕES (SISTEMA GERAL)
+===================================================== */
+.botao {
+    border: none;
+    border-radius: var(--radius-md);
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-sm);
+}
+
+.botao:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.botao:active {
+    transform: translateY(0);
+}
+
+.botao-sair {
+    background: var(--surface-color);
+    color: var(--danger-color);
+    border: 1px solid var(--surface-border);
+    padding: 8px 16px;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.botao-sair:hover {
+    background: var(--danger-color);
+    color: white;
+    border-color: var(--danger-color);
+}
+
+.botao-voltar {
+    position: absolute;
+    top: 100px;
+    left: 40px;
+    height: 45px;
+    padding: 0 20px;
+    border: 1px solid var(--surface-border);
+    border-radius: var(--radius-md);
+    background: var(--surface-color);
+    color: var(--text-secondary);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    box-shadow: var(--shadow-sm);
+}
+
+.botao-voltar:hover {
+    background: var(--bg-color);
+    color: var(--text-primary);
+    border-color: var(--text-secondary);
+}
+
+/* =====================================================
+   TYPOGRAFIA E TÍTULOS
+===================================================== */
+h1 {
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+    letter-spacing: -1px;
+}
+
+.subtitulo {
+    font-size: 18px;
+    color: var(--text-secondary);
+    margin-bottom: 30px;
+    font-weight: 400;
+}
+
+/* =====================================================
+   INPUTS E CAMPOS DE FORMULÁRIO
+===================================================== */
+.campo, .formulario-linha input, .consulta-area input {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--surface-border);
+    border-radius: var(--radius-md);
+    background: var(--surface-color);
+    transition: all var(--transition-fast);
+}
+
+.campo:focus-within, .formulario-linha input:focus, .consulta-area input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    outline: none;
+}
+
+.icone-campo {
+    font-size: 20px;
+    color: var(--text-secondary);
+    margin-left: 15px;
+}
+
+.campo input {
+    flex: 1;
+    height: 100%;
+    border: none;
+    outline: none;
+    padding: 0 15px;
+    font-size: 16px;
+    background: transparent;
+    color: var(--text-primary);
+}
+
+.mostrar-senha {
+    border: none;
+    background: transparent;
+    font-size: 18px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    margin-right: 15px;
+    transition: color var(--transition-fast);
+}
+.mostrar-senha:hover { color: var(--text-primary); }
+
+/* =====================================================
+   TELA 1 - LOGIN
+===================================================== */
+.login-container {
+    min-height: calc(100vh - 70px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.icone-login {
+    font-size: 60px;
+    margin-bottom: 20px;
+}
+
+.login-box {
+    width: 450px;
+    max-width: 90%;
+    padding: 40px;
+    background: var(--surface-color);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    text-align: left;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    opacity: 0;
+    animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.login-box label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    margin-top: 20px;
+}
+
+.campo { height: 50px; }
+
+.botao-acessar {
+    width: 100%;
+    height: 50px;
+    margin-top: 30px;
+    background: var(--primary-color);
+    animation: pulseGlow 3s infinite;
+}
+.botao-acessar:hover { background: var(--primary-hover); }
+
+#mensagem-login {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* =====================================================
+   TELA 2 - CONSULTA
+===================================================== */
+.consulta-container {
+    min-height: calc(100vh - 70px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.icone-consulta {
+    font-size: 60px;
+    margin-bottom: 20px;
+}
+
+.consulta-area {
+    display: flex;
+    width: 700px;
+    max-width: 90%;
+    gap: 12px;
+    opacity: 0;
+    animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.consulta-area input {
+    flex: 1;
+    height: 55px;
+    padding: 0 20px;
+    font-size: 16px;
+}
+
+.botao-consultar {
+    height: 55px;
+    padding: 0 30px;
+    background: var(--primary-color);
+}
+.botao-consultar:hover { background: var(--primary-hover); }
+
+.acoes-gerenciamento {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-top: 30px;
+}
+
+.linha-botoes {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+
+.linha-botoes .botao {
+    height: 45px;
+    padding: 0 20px;
+    min-width: 220px;
+    font-size: 15px;
+}
+
+.botao-retirada-epi { background: var(--warning-color); }
+.botao-retirada-epi:hover { background: var(--warning-hover); }
+
+.botao-devolucao-epi { background: var(--purple-color); }
+.botao-devolucao-epi:hover { background: var(--purple-hover); }
+
+.botao-estoque { background: var(--secondary-color); }
+.botao-estoque:hover { background: var(--secondary-hover); }
+
+.botao-editar-topo {
+    position: absolute;
+    top: 100px;
+    right: 40px;
+    height: 45px;
+    padding: 0 20px;
+    background: var(--success-color);
+}
+.botao-editar-topo:hover { background: var(--success-hover); }
+
+/* =====================================================
+   TELA 3 - EDITAR / ADICIONAR
+===================================================== */
+.editar-container {
+    width: 800px;
+    max-width: 90%;
+    margin: 100px auto 40px;
+    background: var(--surface-color);
+    padding: 40px;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    opacity: 0;
+    animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.titulo-pagina {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.icone-editar {
+    font-size: 48px;
+    margin-bottom: 10px;
+}
+
+.formulario-linha {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.formulario-linha label {
+    width: 130px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.formulario-linha input, .formulario-linha select {
+    flex: 1;
+    height: 50px;
+    padding: 0 15px;
+    font-size: 16px;
+    border: 1px solid var(--surface-border);
+    border-radius: var(--radius-md);
+    outline: none;
+    transition: all var(--transition-fast);
+}
+
+.formulario-linha input:focus, .formulario-linha select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.botoes-edicao {
+    display: flex;
+    gap: 15px;
+    margin-top: 40px;
+}
+
+.botoes-edicao .botao {
+    flex: 1;
+    height: 50px;
+}
+
+.botao-adicionar { background: var(--success-color); }
+.botao-adicionar:hover { background: var(--success-hover); }
+
+.botao-atualizar { background: var(--primary-color); }
+.botao-atualizar:hover { background: var(--primary-hover); }
+
+.botao-deletar { background: var(--danger-color); }
+.botao-deletar:hover { background: var(--danger-hover); }
+
+#mensagem-edicao {
+    text-align: center;
+    margin-top: 20px;
+    font-weight: 500;
+    font-size: 15px;
+}
+
+/* =====================================================
+   TELAS DE EPI (ESTOQUE, RETIRADA, DEVOLUÇÃO)
+===================================================== */
+.epi-container, .devolucao-container, .estoque-container {
+    width: 900px;
+    max-width: 90%;
+    margin: 100px auto 40px;
+    background: var(--surface-color);
+    padding: 40px;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    opacity: 0;
+    animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.epi-container .consulta-area, .devolucao-container .consulta-area {
+    width: 100%;
+    margin-bottom: 30px;
+}
+
+/* =====================================================
+   TABELAS E RESULTADOS
+===================================================== */
+.resultados-container {
+    width: 95%;
+    max-width: 1200px;
+    margin: 40px auto;
+    text-align: center;
+    opacity: 0;
+    animation: slideUpFade 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
+}
+
+.icone-resultados {
+    font-size: 48px;
+    margin-bottom: 10px;
+}
+
+.pesquisa-realizada {
+    display: flex;
+    align-items: center;
+    text-align: left;
+    padding: 20px;
+    margin: 20px 0 30px;
+    border-radius: var(--radius-lg);
+    background: var(--surface-color);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--surface-border);
+}
+
+.icone-pesquisa {
+    font-size: 32px;
+    margin-right: 20px;
+    color: var(--primary-color);
+}
+
+.pesquisa-realizada div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.pesquisa-realizada strong {
+    font-size: 18px;
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.tabela-container, .tabela-scroll {
+    background: var(--surface-color);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--surface-border);
+    margin-top: 20px;
+}
+
+.tabela-scroll {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+    text-align: left;
+}
+
+th {
+    height: 42px;
+    background: #f8fafc;
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    padding: 0 20px;
+    border-bottom: 2px solid var(--surface-border);
+    white-space: nowrap;
+}
+
+td {
+    height: 52px;
+    padding: 0 20px;
+    border-bottom: 1px solid var(--surface-border);
+    color: var(--text-primary);
+    white-space: nowrap;
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+tbody tr {
+    transition: background var(--transition-fast);
+}
+
+tbody tr:hover {
+    background: #f1f5f9;
+}
+
+.total-resultados {
+    margin-top: 20px;
+    font-size: 15px;
+    color: var(--text-secondary);
+}
+
+.total-resultados strong {
+    color: var(--text-primary);
+}
+
+/* Badges de Status */
+.badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+
+.badge-ok {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.badge-baixo {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.badge-retirado {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.badge-devolvido {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.badge-atrasado {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+/* =====================================================
+   RESPONSIVIDADE
+===================================================== */
+@media (max-width: 900px) {
+    .barra-superior { padding: 0 20px; }
+    h1 { font-size: 28px; }
+    .consulta-area { flex-direction: column; width: 100%; }
+    .botao-consultar { width: 100%; }
+    .linha-botoes { flex-direction: column; }
+    .linha-botoes .botao { width: 100%; }
+    .formulario-linha { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .formulario-linha label { width: auto; }
+    .formulario-linha input, .formulario-linha select { width: 100%; }
+    .botoes-edicao { flex-direction: column; }
+    .botao-editar-topo, .botao-voltar { position: static; display: block; margin: 20px auto; width: 90%; }
+    .editar-container, .epi-container, .devolucao-container, .estoque-container { margin-top: 20px; padding: 20px; }
+    td, th { padding: 0 10px; }
+}
+
+/* =====================================================
+   ANIMAÇÕES (KEYFRAMES)
+===================================================== */
+@keyframes slideUpFade {
+    0% {
+        opacity: 0;
+        transform: translateY(35px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulseGlow {
+    0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4); }
+    70% { box-shadow: 0 0 0 8px rgba(37, 99, 235, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+}
+
+@keyframes floatBackground {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retirada de EPI</title>
+    <link rel="icon" type="image/png" href="../imagem/favicon.png">
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .page-container {
+            width: 95%;
+            max-width: 900px;
+            margin: 40px auto;
+        }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 24px;
+            opacity: 0;
+            animation: slideUpFade 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .page-header .icon-back {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: white;
+            border: 1px solid var(--surface-border);
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: all var(--transition-fast);
+            text-decoration: none;
+        }
+        .page-header .icon-back:hover {
+            background: var(--bg-color);
+            color: var(--text-primary);
+        }
+
+        .form-card {
+            background: var(--surface-color);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--surface-border);
+            padding: 32px;
+            margin-bottom: 24px;
+            opacity: 0;
+            animation: slideUpFade 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
+        }
+
+        .form-card-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--surface-border);
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .input-group label {
+            width: 60px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .input-group input {
+            flex: 1;
+            height: 48px;
+            padding: 0 16px;
+            font-size: 15px;
+            font-family: 'Inter', sans-serif;
+            border: 1px solid var(--surface-border);
+            border-radius: var(--radius-md);
+            outline: none;
+            transition: all var(--transition-fast);
+            background: var(--bg-color);
+            color: var(--text-primary);
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+            background: white;
+        }
+
+        .table-wrapper {
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            border: 1px solid var(--surface-border);
+        }
+
+        .tabela-epi {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .tabela-epi th {
+            background: var(--bg-color);
+            color: var(--text-secondary);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--surface-border);
+        }
+
+        .tabela-epi td {
+            padding: 16px;
+            border-bottom: 1px solid var(--surface-border);
+            vertical-align: middle;
+        }
+        
+        .tabela-epi tr:last-child td {
+            border-bottom: none;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid var(--surface-border);
+        }
+        
+        .botao-retirar-epi {
+            background: var(--primary-color);
+            color: white;
+            padding: 12px 24px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        .botao-retirar-epi:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+        
+        #mensagem-retirada {
+            text-align: right;
+            margin-top: 12px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <!-- Barra superior -->
+    <header class="barra-superior">
+        <div class="titulo-sistema">📦 Retirada de EPI</div>
+        <button class="botao-sair" onclick="fazerLogout()">🚪 Sair</button>
+    </header>
+
+    <main class="page-container">
+        <!-- Botão Voltar e Título da Página -->
+        <div class="page-header">
+            <button class="icon-back" onclick="voltarConsulta()">← Voltar</button>
+            <div>
+                <h1 style="margin:0; font-size:26px;">Retirada de Equipamentos</h1>
+                <p style="font-size:13px; color:var(--text-secondary); margin:0;">Informe o CPF e selecione os itens desejados</p>
+            </div>
+        </div>
+
+        <!-- Card de Busca -->
+        <div class="form-card">
+            <div class="form-card-title">👤 Identificação do Usuário</div>
+            <div class="input-group">
+                <label for="cpf-retirada">CPF:</label>
+                <input type="text" id="cpf-retirada" placeholder="Digite o CPF..." maxlength="14" oninput="aplicarMascaraCPF(this)">
+            </div>
+        </div>
+
+        <!-- Card da Tabela -->
+        <div class="form-card" style="animation-delay: 0.2s;">
+            <div class="form-card-title">📦 Itens em Estoque</div>
+            
+            <div class="table-wrapper">
+                <table class="tabela-epi">
+                    <thead>
+                        <tr>
+                            <th>EPI</th>
+                            <th>Em Estoque</th>
+                            <th>Quantidade a Retirar</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-retirada-corpo">
+                        <tr>
+                            <td colspan="3" style="text-align:center; padding: 30px; color: var(--text-secondary);">
+                                Carregando EPIs...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="form-actions">
+                <button class="botao-retirar-epi" onclick="realizarRetirada()">
+                    📦 Confirmar Retirada
+                </button>
+            </div>
+            
+            <div id="mensagem-retirada"></div>
+        </div>
+    </main>
+
+    <script src="../js/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Funcionários</title>
+    <link rel="icon" type="image/png" href="../imagem/favicon.png">
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .page-container {
+            width: 95%;
+            max-width: 800px;
+            margin: 40px auto;
+        }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 24px;
+            opacity: 0;
+            animation: slideUpFade 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .page-header .icon-back {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: white;
+            border: 1px solid var(--surface-border);
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: all var(--transition-fast);
+            text-decoration: none;
+        }
+        .page-header .icon-back:hover {
+            background: var(--bg-color);
+            color: var(--text-primary);
+        }
+
+        .form-card {
+            background: var(--surface-color);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--surface-border);
+            padding: 32px;
+            opacity: 0;
+            animation: slideUpFade 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
+        }
+
+        .form-card-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--surface-border);
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            width: 100px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-align: right;
+        }
+
+        .input-group input, .input-group select {
+            flex: 1;
+            height: 48px;
+            padding: 0 16px;
+            font-size: 15px;
+            font-family: 'Inter', sans-serif;
+            border: 1px solid var(--surface-border);
+            border-radius: var(--radius-md);
+            outline: none;
+            transition: all var(--transition-fast);
+            background: var(--bg-color);
+            color: var(--text-primary);
+        }
+
+        .input-group input:focus, .input-group select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+            background: white;
+        }
+
+        .btn-search {
+            height: 48px;
+            padding: 0 20px;
+            font-size: 14px;
+            background: var(--primary-color);
+            border-radius: var(--radius-md);
+            color: white;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        .btn-search:hover { background: var(--primary-hover); transform: translateY(-2px); }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid var(--surface-border);
+        }
+
+        .form-actions .botao {
+            flex: 1;
+            height: 48px;
+            font-size: 14px;
+        }
+
+        #mensagem-edicao {
+            text-align: center;
+            margin-top: 20px;
+            font-weight: 600;
+            font-size: 14px;
+            padding: 12px;
+            border-radius: var(--radius-md);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Barra superior -->
+    <header class="barra-superior">
+        <div class="titulo-sistema">👥 Gerenciar Funcionários</div>
+        <button class="botao-sair" onclick="fazerLogout()">🚪 Sair</button>
+    </header>
+
+    <main class="page-container">
+
+        <!-- Botão Voltar e Título da Página -->
+        <div class="page-header">
+            <button class="icon-back" onclick="voltarConsulta()">← Voltar</button>
+            <div>
+                <h1 style="margin:0; font-size:26px;">Gerenciar Cadastro</h1>
+                <p style="font-size:13px; color:var(--text-secondary); margin:0;">Adicione, edite ou remova funcionários do sistema</p>
+            </div>
+        </div>
+
+        <!-- Card do Formulário -->
+        <div class="form-card">
+            <div class="form-card-title">
+                📝 Dados do Funcionário
+            </div>
+
+            <!-- CPF / Matrícula -->
+            <div class="input-group">
+                <label for="cpf">CPF/Matrícula:</label>
+                <input type="text" id="cpf" oninput="aplicarMascaraCPF(this)" placeholder="Digite o CPF ou Matrícula...">
+                <button type="button" class="btn-search" onclick="buscarUsuarioPorCPF()">🔍 Buscar</button>
+            </div>
+
+            <div id="secao-dados-usuario">
+                <!-- Matrícula -->
+                <div class="input-group">
+                    <label for="matricula">Matrícula:</label>
+                    <input type="text" id="matricula" placeholder="Ex: FUNC-001...">
+                </div>
+
+                <!-- Nome -->
+                <div class="input-group">
+                    <label for="nome">Nome:</label>
+                    <input type="text" id="nome" placeholder="Nome completo...">
+                </div>
+
+                <!-- Email -->
+                <div class="input-group">
+                    <label for="email">E-mail:</label>
+                    <input type="email" id="email" placeholder="E-mail corporativo...">
+                </div>
+
+                <!-- Telefone -->
+                <div class="input-group">
+                    <label for="telefone">Telefone:</label>
+                    <input type="text" id="telefone" placeholder="Telefone com DDD...">
+                </div>
+
+                <!-- Setor -->
+                <div class="input-group">
+                    <label for="setor_id">Setor:</label>
+                    <select id="setor_id">
+                        <option value="">Selecione o setor...</option>
+                    </select>
+                </div>
+
+                <!-- Profissão -->
+                <div class="input-group">
+                    <label for="profissao">Profissão:</label>
+                    <input type="text" id="profissao" placeholder="Digite a profissão...">
+                </div>
+            </div>
+
+            <!-- Ações -->
+            <div class="form-actions" id="container-botao-atualizar">
+                <button type="button" class="botao botao-adicionar" onclick="adicionarUsuario()">
+                    👤+ Adicionar
+                </button>
+
+                <button type="button" class="botao botao-atualizar" id="btn-salvar-atualizar" onclick="atualizarUsuario()">
+                    📝 Atualizar
+                </button>
+
+                <button type="button" class="botao botao-adicionar" id="btn-reativar-usuario" onclick="reativarUsuario()" style="display: none; background-color: #27ae60;">
+                    🔄 Reativar
+                </button>
+
+                <button type="button" class="botao botao-deletar" onclick="deletarUsuario()">
+                    🗑 Deletar
+                </button>
+            </div>
+
+            <div id="mensagem-edicao"></div>
+        </div>
+    </main>
+
+    <script src="../js/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deletar Funcionário</title>
+    <link rel="icon" type="image/png" href="../imagem/favicon.png">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+
+    <!-- Barra superior -->
+    <header class="barra-superior">
+        <div class="titulo-sistema">
+            🗑 &nbsp; Deletar / Inativar Funcionário
+        </div>
+        <button class="botao-sair" onclick="fazerLogout()">
+            🚪 Sair
+        </button>
+    </header>
+
+    <!-- Botão voltar -->
+    <button class="botao-voltar" onclick="voltarConsulta()">
+        ← &nbsp; Voltar
+    </button>
+
+    <!-- Conteúdo -->
+    <main class="editar-container">
+
+        <div class="titulo-pagina">
+            <div class="icone-editar" style="color: #df2727;">
+                🗑
+            </div>
+            <h1>Deletar Funcionário</h1>
+            <p>
+                Informe o CPF ou Matrícula do funcionário para inativá-lo no sistema.
+            </p>
+        </div>
+
+        <!-- Campo CPF / Matrícula -->
+        <div class="formulario-linha">
+            <label for="cpf">CPF / Matrícula:</label>
+            <input type="text" id="cpf" oninput="aplicarMascaraCPF(this)" placeholder="Digite o CPF ou Matrícula...">
+            <button type="button" class="botao botao-atualizar" onclick="buscarUsuarioParaDeletar()" style="margin-left: 10px; width: auto; padding: 12px 20px; font-size: 15px;">
+                🔍 Verificar
+            </button>
+        </div>
+
+        <!-- Informações do Funcionário encontrado -->
+        <div id="secao-dados-deletar" style="margin: 20px 0; text-align: left; padding: 18px 25px; background: rgba(255,255,255,0.9); border-radius: 8px; border: 1px solid var(--surface-border); display: none;">
+            <p><strong>Matrícula:</strong> <span id="deletar-matricula">-</span></p>
+            <p style="margin-top: 5px;"><strong>Nome:</strong> <span id="deletar-nome">-</span></p>
+            <p style="margin-top: 5px;"><strong>Setor:</strong> <span id="deletar-setor">-</span></p>
+            <p style="margin-top: 5px;"><strong>Profissão:</strong> <span id="deletar-profissao">-</span></p>
+        </div>
+
+        <!-- Botão Deletar (oculto até a verificação) -->
+        <div class="botoes-edicao" id="container-botao-deletar" style="justify-content: center; margin-top: 30px; display: none;">
+            <button type="button" class="botao botao-deletar" onclick="deletarUsuario()" style="width: 100%; max-width: 400px;">
+                🗑 &nbsp; Confirmar e Inativar Funcionário
+            </button>
+        </div>
+
+        <p id="mensagem-edicao"></p>
+
+    </main>
+
+    <script src="../js/script.js"></script>
+
+</body>
+
+</html>

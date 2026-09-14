@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estoque de EPI</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .estoque-container {
+            width: 98%;
+            max-width: 1200px;
+            margin: 40px auto;
+        }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 24px;
+            opacity: 0;
+            animation: slideUpFade 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .page-header .icon-back {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: white;
+            border: 1px solid var(--surface-border);
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: all var(--transition-fast);
+            text-decoration: none;
+        }
+        .page-header .icon-back:hover {
+            background: var(--bg-color);
+            color: var(--text-primary);
+        }
+
+        .estoque-card {
+            background: var(--surface-color);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--surface-border);
+            padding: 32px;
+            opacity: 0;
+            animation: slideUpFade 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
+        }
+
+        .estoque-card-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--surface-border);
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--surface-border);
+        }
+
+        .table-wrapper table {
+            min-width: 700px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Barra superior -->
+    <header class="barra-superior">
+        <div class="titulo-sistema">📦 Estoque de EPI</div>
+        <button class="botao-sair" onclick="fazerLogout()">🚪 Sair</button>
+    </header>
+
+    <main class="estoque-container">
+
+        <!-- Botão Voltar e Título da Página -->
+        <div class="page-header">
+            <button class="icon-back" onclick="voltarConsulta()">← Voltar</button>
+            <div>
+                <h1 style="margin:0; font-size:26px;">Estoque de EPI</h1>
+                <p style="font-size:13px; color:var(--text-secondary); margin:0;">Quantidade de cada item disponível no estoque</p>
+            </div>
+        </div>
+
+        <!-- Card da tabela -->
+        <div class="estoque-card">
+            <div class="estoque-card-title">
+                📦 Itens em Estoque
+            </div>
+            <div class="table-wrapper">
+                <table class="tabela-estoque">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Nome</th>
+                            <th>CA</th>
+                            <th>Tamanho</th>
+                            <th>Quantidade</th>
+                            <th>Estoque Mín.</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-estoque-corpo">
+                        <tr>
+                            <td colspan="7" style="text-align:center; color:var(--text-secondary);">
+                                Carregando estoque...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <script src="../js/script.js"></script>
+
+</body>
+
+</html>
