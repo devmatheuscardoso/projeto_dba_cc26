@@ -122,10 +122,37 @@ function mostrarSenha() {
 function aplicarMascaraCPF(input) {
     if (!input) return;
     let raw = input.value;
-    // Se contiver letras (ex: FUNC-001), não aplica máscara de CPF numérica
-    if (/[a-zA-Z]/.test(raw)) {
+    if (!raw) return;
+
+    // Se o usuário começar a digitar "func" ou tiver letras (Matrícula)
+    if (/^[fF]/i.test(raw) || /[a-zA-Z]/.test(raw)) {
+        let upper = raw.toUpperCase();
+
+        if (/^FUNC/i.test(raw)) {
+            let digits = upper.replace(/^FUNC-?/, "").replace(/\D/g, "");
+            if (raw.endsWith("-") && digits === "") {
+                input.value = "FUNC-";
+            } else if (digits.length > 0) {
+                input.value = "FUNC-" + digits;
+            } else {
+                input.value = "FUNC-";
+            }
+            return;
+        }
+
+        if (/^FUN?C?$/i.test(raw)) {
+            if (upper.length >= 4) {
+                input.value = "FUNC-";
+            } else {
+                input.value = upper;
+            }
+            return;
+        }
+
+        input.value = upper;
         return;
     }
+
     let valor = raw.replace(/\D/g, "");
     if (valor.length > 11) valor = valor.slice(0, 11);
 
@@ -555,18 +582,22 @@ function atualizarUsuario() {
 
 function deletarUsuario() {
     const campoCPF = document.getElementById("cpf");
+    const campoMatricula = document.getElementById("matricula");
     const mensagem = document.getElementById("mensagem-edicao");
 
-    if (!campoCPF || !mensagem) return;
-    const cpf = campoCPF.value.trim();
+    const valCpf = campoCPF ? campoCPF.value.trim() : "";
+    const valMat = campoMatricula ? campoMatricula.value.trim() : "";
+    const valorParaEnviar = cpfVerificadoDeletar || valCpf || valMat;
 
-    if (cpf === "" && !cpfVerificadoDeletar) {
-        mensagem.textContent = "Digite o CPF ou Matrícula do funcionário a inativar.";
-        mensagem.style.color = "red";
+    if (!valorParaEnviar) {
+        if (mensagem) {
+            mensagem.textContent = "Digite o CPF ou Matrícula do funcionário a inativar.";
+            mensagem.style.color = "red";
+        } else {
+            alert("Digite o CPF ou Matrícula do funcionário a inativar.");
+        }
         return;
     }
-
-    const valorParaEnviar = cpfVerificadoDeletar || cpf;
 
     const confirmar = confirm(`Tem certeza que deseja inativar o funcionário (${valorParaEnviar})?`);
     if (!confirmar) return;
@@ -578,19 +609,25 @@ function deletarUsuario() {
     })
     .then(r => r.json())
     .then(dados => {
-        if (dados.sucesso) {
+        if (mensagem) {
             mensagem.textContent = dados.mensagem || "Funcionário inativado com sucesso!";
-            mensagem.style.color = "green";
+            mensagem.style.color = dados.sucesso ? "green" : "red";
+        }
+        if (dados.sucesso) {
+            alert(dados.mensagem || "Funcionário inativado com sucesso!");
             limparCampos();
         } else {
-            mensagem.textContent = dados.mensagem;
-            mensagem.style.color = "red";
+            if (!mensagem) alert(dados.mensagem);
         }
     })
     .catch(erro => {
         console.error("Erro ao deletar:", erro);
-        mensagem.textContent = "Erro ao conectar com o servidor.";
-        mensagem.style.color = "red";
+        if (mensagem) {
+            mensagem.textContent = "Erro ao conectar com o servidor.";
+            mensagem.style.color = "red";
+        } else {
+            alert("Erro ao conectar com o servidor.");
+        }
     });
 }
 

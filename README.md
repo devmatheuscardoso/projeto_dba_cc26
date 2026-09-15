@@ -31,12 +31,13 @@ O **Sistema de Controle de EPIs** é uma aplicação corporativa e industrial de
 
 ### Regras de Negócio e Funcionalidades
 - **Normalização e Integridade Referencial**: Mapeamento completo de profissões (`profissoes`) e setores (`setores`), garantindo que cada funcionário pertença a entidades válidas via chaves estrangeiras.
-- **Entrada Flexível de Profissão vs. Seleção de Setor**: O setor é selecionado via opções predefinidas (`setores`), enquanto a profissão pode ser digitada livremente pelo usuário na interface e o sistema cadastra/associa automaticamente na tabela `profissoes`.
-- **Rastreabilidade de Funcionários**: Cadastro de colaboradores associando matrícula (única), CPF, e-mail, telefone, setor e profissão.
-- **Gestão de Estoque de EPIs**: Controle rigoroso de estoque atual e ponto de reposição (`estoque_minimo`), contendo código do item, Certificado de Aprovação (CA) e tamanho.
-- **Movimentação de Retiradas**: Mapeamento do fluxo de entrega de equipamentos vinculando o funcionário (`retiradas`) aos itens solicitados (`itens_retirada`), controlando datas e quantidades.
-- **Controle de Status de Devolução**: Monitoramento dos itens com status `RETIRADO`, `DEVOLVIDO` ou `ATRASADO`.
-- **Inativação Lógica (*Soft Delete*)**: O sistema utiliza o atributo `ativo` (`1` para ativo e `0` para inativo) em todas as tabelas principais para preservar o histórico operacional.
+- **Identificação e Busca Híbrida (CPF ou Matrícula)**: Todas as pesquisas, consultas, atualização, inativação/deletar, retiradas e devoluções aceitam o **CPF** (com ou sem formatação `xxx.xxx.xxx-xx`) ou a **Matrícula** (ex: `FUNC-001`).
+- **Auto-complete Inteligente de Matrícula**: Nos campos de busca e cadastro, digitar `func` ou `FUNC` completa automaticamente com o hífen e prefixo `FUNC-` facilitando a digitação rápida.
+- **Entrada Flexível de Profissão vs. Seleção de Setor**: O setor é selecionado via opções predefinidas (`setores`), enquanto a profissão pode ser digitada livremente pelo usuário na interface e o sistema cadastra/associa automaticamente na tabela `profissoes` gerando uma descrição padronizada da categoria.
+- **Rastreabilidade e Formatação de Funcionários**: Cadastro de colaboradores associando matrícula (única), CPF, e-mail, telefone, setor e profissão. Caso a matrícula não seja informada no cadastro, o sistema gera automaticamente no padrão `FUNC-xxx`.
+- **Gestão de Estoque de EPIs**: Controle rigoroso de estoque atual e ponto de reposição (`estoque_minimo`), contendo obrigatoriamente código do item, Certificado de Aprovação (CA), tamanho e sinalização visual de estoque baixo (`BAIXO`/`OK`).
+- **Movimentação e Devolução de EPIs**: Mapeamento do fluxo de entrega e devolução parcial ou total de equipamentos aos colaboradores, atualizando o saldo do estoque e registrando datas e status.
+- **Inativação Lógica (*Soft Delete*)**: O sistema utiliza o atributo `ativo` (`1` para ativo e `0` para inativo) para desativar/inativar funcionários no banco preservando todo o histórico de retiradas e devoluções.
 - **Autenticação Administrativa**: O acesso ao painel de gerenciamento exige autenticação prévia de usuário administrador na tabela `admins`.
 
 ---
