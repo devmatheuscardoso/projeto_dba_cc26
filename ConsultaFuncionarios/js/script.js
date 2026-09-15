@@ -385,7 +385,7 @@ function buscarUsuarioParaDeletar() {
     .then(dados => {
         if (dados.sucesso) {
             const u = dados.usuario || dados.funcionario;
-            cpfVerificadoDeletar = u.cpf;
+            cpfVerificadoDeletar = u.cpf || u.matricula;
 
             if (secaoDeletar) secaoDeletar.style.display = "block";
             if (containerBotao) containerBotao.style.display = "flex";
@@ -395,21 +395,28 @@ function buscarUsuarioParaDeletar() {
             if (spanSetor) spanSetor.textContent = u.setor_nome || u.setor || "-";
             if (spanProfissao) spanProfissao.textContent = u.profissao_nome || u.profissao || "-";
 
-            mensagem.textContent = "Funcionário encontrado! Clique em 'Confirmar e Inativar Funcionário' para prosseguir.";
-            mensagem.style.color = "green";
+            mensagem.textContent = "Funcionário ativo encontrado! Clique no botão vermelho para confirmar a inativação.";
+            mensagem.style.color = "#059669";
 
         } else if (dados.inativo) {
+            const u = dados.usuario || dados.funcionario;
             cpfVerificadoDeletar = "";
-            if (secaoDeletar) secaoDeletar.style.display = "none";
+            if (secaoDeletar) secaoDeletar.style.display = "block";
             if (containerBotao) containerBotao.style.display = "none";
-            mensagem.textContent = "Funcionário já se encontra inativo.";
+
+            if (spanMatricula && u) spanMatricula.textContent = u.matricula || "-";
+            if (spanNome && u) spanNome.textContent = u.nome || "-";
+            if (spanSetor && u) spanSetor.textContent = u.setor_nome || u.setor || "-";
+            if (spanProfissao && u) spanProfissao.textContent = u.profissao_nome || u.profissao || "-";
+
+            mensagem.textContent = "Funcionário encontrado, porém já se encontra INATIVO no sistema (ativo = 0).";
             mensagem.style.color = "#d35400";
 
         } else {
             cpfVerificadoDeletar = "";
             if (secaoDeletar) secaoDeletar.style.display = "none";
             if (containerBotao) containerBotao.style.display = "none";
-            mensagem.textContent = dados.mensagem;
+            mensagem.textContent = dados.mensagem || "Funcionário não encontrado.";
             mensagem.style.color = "red";
         }
     })
