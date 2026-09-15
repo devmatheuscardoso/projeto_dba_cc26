@@ -54,16 +54,17 @@
             <p style="margin-top: 5px;"><strong>Nome:</strong> <span id="deletar-nome">-</span></p>
             <p style="margin-top: 5px;"><strong>Setor:</strong> <span id="deletar-setor">-</span></p>
             <p style="margin-top: 5px;"><strong>Profissão:</strong> <span id="deletar-profissao">-</span></p>
+            <p style="margin-top: 5px;"><strong>Status:</strong> <span id="deletar-status">-</span></p>
         </div>
 
         <!-- Botão Deletar (oculto até a verificação) -->
         <div class="botoes-edicao" id="container-botao-deletar" style="justify-content: center; margin-top: 30px; display: none;">
-            <button type="button" class="botao botao-deletar" onclick="deletarUsuario()" style="width: 100%; max-width: 400px;">
+            <button type="button" class="botao botao-deletar" id="btn-confirmar-inativar" onclick="deletarUsuario()" style="width: 100%; max-width: 400px;">
                 🗑 &nbsp; Confirmar e Inativar Funcionário
             </button>
         </div>
 
-        <p id="mensagem-edicao"></p>
+        <p id="mensagem-edicao" style="font-weight: bold; margin-top: 20px; font-size: 16px; text-align: center; min-height: 24px;"></p>
 
     </main>
 

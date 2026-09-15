@@ -390,6 +390,10 @@ function buscarUsuarioPorCPF() {
    VERIFICAR FUNCIONÁRIO PARA DELETAR
 ===================================================== */
 
+/* =====================================================
+   VERIFICAR FUNCIONÁRIO PARA DELETAR
+===================================================== */
+
 function buscarUsuarioParaDeletar() {
     const campoCPF = document.getElementById("cpf");
     const mensagem = document.getElementById("mensagem-edicao");
@@ -399,18 +403,22 @@ function buscarUsuarioParaDeletar() {
     const spanNome = document.getElementById("deletar-nome");
     const spanSetor = document.getElementById("deletar-setor");
     const spanProfissao = document.getElementById("deletar-profissao");
+    const spanStatus = document.getElementById("deletar-status");
 
     if (!campoCPF || !mensagem) return;
     const cpf = campoCPF.value.trim();
 
     if (cpf === "") {
         mensagem.textContent = "Digite o CPF ou Matrícula para verificar.";
-        mensagem.style.color = "red";
+        mensagem.style.color = "#dc2626";
         cpfVerificadoDeletar = "";
         if (secaoDeletar) secaoDeletar.style.display = "none";
         if (containerBotao) containerBotao.style.display = "none";
         return;
     }
+
+    mensagem.textContent = "Buscando funcionário...";
+    mensagem.style.color = "#2563eb";
 
     fetch(API_URL + "/funcionarios/buscar-cpf?cpf=" + encodeURIComponent(cpf))
     .then(r => r.json())
@@ -426,13 +434,19 @@ function buscarUsuarioParaDeletar() {
             if (spanNome) spanNome.textContent = u.nome || "-";
             if (spanSetor) spanSetor.textContent = u.setor_nome || u.setor || "-";
             if (spanProfissao) spanProfissao.textContent = u.profissao_nome || u.profissao || "-";
+            if (spanStatus) {
+                spanStatus.textContent = "Ativo (ativo = 1)";
+                spanStatus.style.color = "#059669";
+                spanStatus.style.fontWeight = "bold";
+            }
 
-            mensagem.textContent = "Funcionário ativo encontrado! Clique no botão vermelho para confirmar a inativação.";
+            mensagem.textContent = "✓ Funcionário ativo encontrado! Clique no botão vermelho para confirmar a inativação.";
             mensagem.style.color = "#059669";
 
         } else if (dados.inativo) {
             const u = dados.usuario || dados.funcionario;
-            cpfVerificadoDeletar = "";
+            cpfVerificadoDeletar = u ? (u.cpf || u.matricula) : "";
+
             if (secaoDeletar) secaoDeletar.style.display = "block";
             if (containerBotao) containerBotao.style.display = "none";
 
@@ -440,16 +454,21 @@ function buscarUsuarioParaDeletar() {
             if (spanNome && u) spanNome.textContent = u.nome || "-";
             if (spanSetor && u) spanSetor.textContent = u.setor_nome || u.setor || "-";
             if (spanProfissao && u) spanProfissao.textContent = u.profissao_nome || u.profissao || "-";
+            if (spanStatus) {
+                spanStatus.textContent = "Inativo (ativo = 0)";
+                spanStatus.style.color = "#dc2626";
+                spanStatus.style.fontWeight = "bold";
+            }
 
-            mensagem.textContent = "Funcionário encontrado, porém já se encontra INATIVO no sistema (ativo = 0).";
+            mensagem.textContent = "⚠️ Funcionário encontrado, porém já se encontra INATIVO no sistema (ativo = 0).";
             mensagem.style.color = "#d35400";
 
         } else {
             cpfVerificadoDeletar = "";
             if (secaoDeletar) secaoDeletar.style.display = "none";
             if (containerBotao) containerBotao.style.display = "none";
-            mensagem.textContent = dados.mensagem || "Funcionário não encontrado.";
-            mensagem.style.color = "red";
+            mensagem.textContent = "❌ " + (dados.mensagem || "Funcionário não encontrado.");
+            mensagem.style.color = "#dc2626";
         }
     })
     .catch(erro => {
@@ -457,8 +476,8 @@ function buscarUsuarioParaDeletar() {
         cpfVerificadoDeletar = "";
         if (secaoDeletar) secaoDeletar.style.display = "none";
         if (containerBotao) containerBotao.style.display = "none";
-        mensagem.textContent = "Erro ao conectar com o servidor.";
-        mensagem.style.color = "red";
+        mensagem.textContent = "❌ Erro de conexão com o servidor.";
+        mensagem.style.color = "#dc2626";
     });
 }
 
@@ -623,6 +642,8 @@ function deletarUsuario() {
     const campoCPF = document.getElementById("cpf");
     const campoMatricula = document.getElementById("matricula");
     const mensagem = document.getElementById("mensagem-edicao");
+    const containerBotao = document.getElementById("container-botao-deletar");
+    const spanStatus = document.getElementById("deletar-status");
 
     const valCpf = campoCPF ? campoCPF.value.trim() : "";
     const valMat = campoMatricula ? campoMatricula.value.trim() : "";
@@ -631,15 +652,15 @@ function deletarUsuario() {
     if (!valorParaEnviar) {
         if (mensagem) {
             mensagem.textContent = "Digite o CPF ou Matrícula do funcionário a inativar.";
-            mensagem.style.color = "red";
-        } else {
-            alert("Digite o CPF ou Matrícula do funcionário a inativar.");
+            mensagem.style.color = "#dc2626";
         }
         return;
     }
 
-    const confirmar = confirm(`Tem certeza que deseja inativar o funcionário (${valorParaEnviar})?`);
-    if (!confirmar) return;
+    if (mensagem) {
+        mensagem.textContent = "Inativando funcionário...";
+        mensagem.style.color = "#2563eb";
+    }
 
     fetch(API_URL + "/funcionarios", {
         method: "DELETE",
@@ -648,24 +669,30 @@ function deletarUsuario() {
     })
     .then(r => r.json())
     .then(dados => {
-        if (mensagem) {
-            mensagem.textContent = dados.mensagem || "Funcionário inativado com sucesso!";
-            mensagem.style.color = dados.sucesso ? "green" : "red";
-        }
         if (dados.sucesso) {
-            alert(dados.mensagem || "Funcionário inativado com sucesso!");
-            limparCampos();
+            if (mensagem) {
+                mensagem.textContent = "✓ " + (dados.mensagem || "Funcionário inativado com sucesso (status no banco alterado para 0)!");
+                mensagem.style.color = "#059669";
+            }
+            if (containerBotao) containerBotao.style.display = "none";
+            if (spanStatus) {
+                spanStatus.textContent = "Inativo (ativo = 0)";
+                spanStatus.style.color = "#dc2626";
+                spanStatus.style.fontWeight = "bold";
+            }
+            cpfVerificadoDeletar = "";
         } else {
-            if (!mensagem) alert(dados.mensagem);
+            if (mensagem) {
+                mensagem.textContent = "❌ " + (dados.mensagem || "Erro ao inativar funcionário.");
+                mensagem.style.color = "#dc2626";
+            }
         }
     })
     .catch(erro => {
         console.error("Erro ao deletar:", erro);
         if (mensagem) {
-            mensagem.textContent = "Erro ao conectar com o servidor.";
-            mensagem.style.color = "red";
-        } else {
-            alert("Erro ao conectar com o servidor.");
+            mensagem.textContent = "❌ Erro de conexão com o servidor ao tentar inativar.";
+            mensagem.style.color = "#dc2626";
         }
     });
 }

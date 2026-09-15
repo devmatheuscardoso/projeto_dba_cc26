@@ -127,9 +127,19 @@ class UsuarioController:
             if termo.isdigit():
                 conds.append("f.id = %s")
                 params.append(int(termo))
+                mat_pad = f"FUNC-{int(termo):03d}"
+                conds.append("f.matricula = %s")
+                params.append(mat_pad)
             if termo_num:
                 conds.append("REPLACE(REPLACE(f.cpf, '.', ''), '-', '') = %s")
                 params.append(termo_num)
+
+            if "FUNC" in termo.upper():
+                num_part = re.sub(r"\D", "", termo)
+                if num_part:
+                    mat_pad = f"FUNC-{int(num_part):03d}"
+                    conds.append("f.matricula = %s")
+                    params.append(mat_pad)
 
             sql = f"""
                 SELECT f.id, f.matricula, f.nome, f.cpf, f.email, f.telefone, 
@@ -150,7 +160,7 @@ class UsuarioController:
                     return {
                         "sucesso": False,
                         "inativo": True,
-                        "mensagem": "Funcionário encontrado, mas inativo. Deseja reativá-lo?",
+                        "mensagem": "Funcionário encontrado, mas inativo.",
                         "usuario": user,
                         "funcionario": user
                     }, 200
@@ -323,21 +333,31 @@ class UsuarioController:
             if termo.isdigit():
                 conds.append("id = %s")
                 params.append(int(termo))
+                mat_pad = f"FUNC-{int(termo):03d}"
+                conds.append("matricula = %s")
+                params.append(mat_pad)
             if termo_num:
                 conds.append("REPLACE(REPLACE(cpf, '.', ''), '-', '') = %s")
                 params.append(termo_num)
+
+            if "FUNC" in termo.upper():
+                num_part = re.sub(r"\D", "", termo)
+                if num_part:
+                    mat_pad = f"FUNC-{int(num_part):03d}"
+                    conds.append("matricula = %s")
+                    params.append(mat_pad)
 
             sql = f"UPDATE funcionarios SET ativo = 0 WHERE ({' OR '.join(conds)}) AND ativo = 1"
             linhas_afetadas = Database.executar_consulta(sql, tuple(params), retornar_dados=False)
 
             if linhas_afetadas > 0:
-                return {"sucesso": True, "mensagem": "Funcionário inativado com sucesso."}, 200
+                return {"sucesso": True, "mensagem": "Funcionário inativado com sucesso (status no banco alterado para 0)."}, 200
             else:
                 sql_chk = f"SELECT id, ativo FROM funcionarios WHERE ({' OR '.join(conds)})"
                 check = Database.executar_consulta(sql_chk, tuple(params))
                 if check:
                     if check[0]["ativo"] == 0:
-                        return {"sucesso": True, "mensagem": "Funcionário já se encontra inativo."}, 200
+                        return {"sucesso": True, "mensagem": "Funcionário já se encontra inativo (ativo = 0)."}, 200
                 return {"sucesso": False, "mensagem": "Funcionário não encontrado."}, 404
 
         except Exception as e:
@@ -349,4 +369,5 @@ class UsuarioController:
         return UsuarioController.atualizar(dados)
 
 FuncionarioController = UsuarioController
+
 
