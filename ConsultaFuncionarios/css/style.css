@@ -7,36 +7,36 @@
     --bg-color: #f4f7f9;
     --text-primary: #1e293b;
     --text-secondary: #64748b;
-    
+
     --primary-color: #2563eb;
     --primary-hover: #1d4ed8;
-    
+
     --secondary-color: #334155;
     --secondary-hover: #1e293b;
-    
+
     --success-color: #10b981;
     --success-hover: #059669;
-    
+
     --danger-color: #ef4444;
     --danger-hover: #dc2626;
-    
+
     --warning-color: #f59e0b;
     --warning-hover: #d97706;
-    
+
     --purple-color: #8b5cf6;
     --purple-hover: #7c3aed;
 
     --surface-color: #ffffff;
     --surface-border: #e2e8f0;
-    
+
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    
+
     --radius-md: 8px;
     --radius-lg: 12px;
     --radius-xl: 16px;
-    
+
     --transition-fast: 0.15s ease-in-out;
     --transition-normal: 0.3s ease;
 }
@@ -61,13 +61,11 @@ body {
        2. Segundo gradiente radial animado para profundidade
        3. A foto de EPIs de fundo */
     background-image:
-        linear-gradient(
-            135deg,
+        linear-gradient(135deg,
             rgba(244, 247, 249, 0.92) 0%,
             rgba(241, 245, 249, 0.88) 50%,
-            rgba(240, 249, 255, 0.92) 100%
-        ),
-        radial-gradient(circle at 0% 0%,   rgba(37, 99, 235, 0.12) 0%, transparent 55%),
+            rgba(240, 249, 255, 0.92) 100%),
+        radial-gradient(circle at 0% 0%, rgba(37, 99, 235, 0.12) 0%, transparent 55%),
         radial-gradient(circle at 100% 100%, rgba(16, 185, 129, 0.10) 0%, transparent 55%),
         url('../imagem/fundo-epi.png');
 
@@ -210,7 +208,9 @@ h1 {
 /* =====================================================
    INPUTS E CAMPOS DE FORMULÁRIO
 ===================================================== */
-.campo, .formulario-linha input, .consulta-area input {
+.campo,
+.formulario-linha input,
+.consulta-area input {
     display: flex;
     align-items: center;
     border: 1px solid var(--surface-border);
@@ -219,7 +219,9 @@ h1 {
     transition: all var(--transition-fast);
 }
 
-.campo:focus-within, .formulario-linha input:focus, .consulta-area input:focus {
+.campo:focus-within,
+.formulario-linha input:focus,
+.consulta-area input:focus {
     border-color: var(--primary-color);
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
     outline: none;
@@ -251,7 +253,10 @@ h1 {
     margin-right: 15px;
     transition: color var(--transition-fast);
 }
-.mostrar-senha:hover { color: var(--text-primary); }
+
+.mostrar-senha:hover {
+    color: var(--text-primary);
+}
 
 /* =====================================================
    TELA 1 - LOGIN
@@ -292,7 +297,9 @@ h1 {
     margin-top: 20px;
 }
 
-.campo { height: 50px; }
+.campo {
+    height: 50px;
+}
 
 .botao-acessar {
     width: 100%;
@@ -301,7 +308,10 @@ h1 {
     background: var(--primary-color);
     animation: pulseGlow 3s infinite;
 }
-.botao-acessar:hover { background: var(--primary-hover); }
+
+.botao-acessar:hover {
+    background: var(--primary-hover);
+}
 
 #mensagem-login {
     text-align: center;
@@ -348,7 +358,10 @@ h1 {
     padding: 0 30px;
     background: var(--primary-color);
 }
-.botao-consultar:hover { background: var(--primary-hover); }
+
+.botao-consultar:hover {
+    background: var(--primary-hover);
+}
 
 .acoes-gerenciamento {
     display: flex;
@@ -371,14 +384,29 @@ h1 {
     font-size: 15px;
 }
 
-.botao-retirada-epi { background: var(--warning-color); }
-.botao-retirada-epi:hover { background: var(--warning-hover); }
+.botao-retirada-epi {
+    background: var(--warning-color);
+}
 
-.botao-devolucao-epi { background: var(--purple-color); }
-.botao-devolucao-epi:hover { background: var(--purple-hover); }
+.botao-retirada-epi:hover {
+    background: var(--warning-hover);
+}
 
-.botao-estoque { background: var(--secondary-color); }
-.botao-estoque:hover { background: var(--secondary-hover); }
+.botao-devolucao-epi {
+    background: var(--purple-color);
+}
+
+.botao-devolucao-epi:hover {
+    background: var(--purple-hover);
+}
+
+.botao-estoque {
+    background: var(--secondary-color);
+}
+
+.botao-estoque:hover {
+    background: var(--secondary-hover);
+}
 
 .botao-editar-topo {
     position: absolute;
@@ -388,7 +416,10 @@ h1 {
     padding: 0 20px;
     background: var(--success-color);
 }
-.botao-editar-topo:hover { background: var(--success-hover); }
+
+.botao-editar-topo:hover {
+    background: var(--success-hover);
+}
 
 /* =====================================================
    TELA 3 - EDITAR / ADICIONAR
@@ -428,7 +459,8 @@ h1 {
     color: var(--text-secondary);
 }
 
-.formulario-linha input, .formulario-linha select {
+.formulario-linha input,
+.formulario-linha select {
     flex: 1;
     height: 50px;
     padding: 0 15px;
@@ -439,7 +471,8 @@ h1 {
     transition: all var(--transition-fast);
 }
 
-.formulario-linha input:focus, .formulario-linha select:focus {
+.formulario-linha input:focus,
+.formulario-linha select:focus {
     border-color: var(--primary-color);
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
@@ -455,14 +488,29 @@ h1 {
     height: 50px;
 }
 
-.botao-adicionar { background: var(--success-color); }
-.botao-adicionar:hover { background: var(--success-hover); }
+.botao-adicionar {
+    background: var(--success-color);
+}
 
-.botao-atualizar { background: var(--primary-color); }
-.botao-atualizar:hover { background: var(--primary-hover); }
+.botao-adicionar:hover {
+    background: var(--success-hover);
+}
 
-.botao-deletar { background: var(--danger-color); }
-.botao-deletar:hover { background: var(--danger-hover); }
+.botao-atualizar {
+    background: var(--primary-color);
+}
+
+.botao-atualizar:hover {
+    background: var(--primary-hover);
+}
+
+.botao-deletar {
+    background: var(--danger-color);
+}
+
+.botao-deletar:hover {
+    background: var(--danger-hover);
+}
 
 #mensagem-edicao {
     text-align: center;
@@ -474,7 +522,9 @@ h1 {
 /* =====================================================
    TELAS DE EPI (ESTOQUE, RETIRADA, DEVOLUÇÃO)
 ===================================================== */
-.epi-container, .devolucao-container, .estoque-container {
+.epi-container,
+.devolucao-container,
+.estoque-container {
     width: 900px;
     max-width: 90%;
     margin: 100px auto 40px;
@@ -486,7 +536,8 @@ h1 {
     animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.epi-container .consulta-area, .devolucao-container .consulta-area {
+.epi-container .consulta-area,
+.devolucao-container .consulta-area {
     width: 100%;
     margin-bottom: 30px;
 }
@@ -540,7 +591,8 @@ h1 {
     font-weight: 600;
 }
 
-.tabela-container, .tabela-scroll {
+.tabela-container,
+.tabela-scroll {
     background: var(--surface-color);
     border-radius: var(--radius-lg);
     overflow: hidden;
@@ -642,19 +694,70 @@ tbody tr:hover {
    RESPONSIVIDADE
 ===================================================== */
 @media (max-width: 900px) {
-    .barra-superior { padding: 0 20px; }
-    h1 { font-size: 28px; }
-    .consulta-area { flex-direction: column; width: 100%; }
-    .botao-consultar { width: 100%; }
-    .linha-botoes { flex-direction: column; }
-    .linha-botoes .botao { width: 100%; }
-    .formulario-linha { flex-direction: column; align-items: flex-start; gap: 8px; }
-    .formulario-linha label { width: auto; }
-    .formulario-linha input, .formulario-linha select { width: 100%; }
-    .botoes-edicao { flex-direction: column; }
-    .botao-editar-topo, .botao-voltar { position: static; display: block; margin: 20px auto; width: 90%; }
-    .editar-container, .epi-container, .devolucao-container, .estoque-container { margin-top: 20px; padding: 20px; }
-    td, th { padding: 0 10px; }
+    .barra-superior {
+        padding: 0 20px;
+    }
+
+    h1 {
+        font-size: 28px;
+    }
+
+    .consulta-area {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .botao-consultar {
+        width: 100%;
+    }
+
+    .linha-botoes {
+        flex-direction: column;
+    }
+
+    .linha-botoes .botao {
+        width: 100%;
+    }
+
+    .formulario-linha {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .formulario-linha label {
+        width: auto;
+    }
+
+    .formulario-linha input,
+    .formulario-linha select {
+        width: 100%;
+    }
+
+    .botoes-edicao {
+        flex-direction: column;
+    }
+
+    .botao-editar-topo,
+    .botao-voltar {
+        position: static;
+        display: block;
+        margin: 20px auto;
+        width: 90%;
+    }
+
+    .editar-container,
+    .epi-container,
+    .devolucao-container,
+    .estoque-container {
+        margin-top: 20px;
+        padding: 20px;
+    }
+
+    td,
+    th {
+        padding: 0 10px;
+    }
 }
 
 /* =====================================================
@@ -665,6 +768,7 @@ tbody tr:hover {
         opacity: 0;
         transform: translateY(35px);
     }
+
     100% {
         opacity: 1;
         transform: translateY(0);
@@ -672,13 +776,43 @@ tbody tr:hover {
 }
 
 @keyframes pulseGlow {
-    0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4); }
-    70% { box-shadow: 0 0 0 8px rgba(37, 99, 235, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+    0% {
+        box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4);
+    }
+
+    70% {
+        box-shadow: 0 0 0 8px rgba(37, 99, 235, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(37, 99, 235, 0);
+    }
 }
 
 @keyframes floatBackground {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+@keyframes animatePhotoBackground {
+    0% {
+        transform: scale(1) translate(0, 0);
+    }
+
+    50% {
+        transform: scale(1.08) translate(-1.5%, -1.2%);
+    }
+
+    100% {
+        transform: scale(1.04) translate(1.5%, 1.2%);
+    }
 }
