@@ -116,40 +116,72 @@ function mostrarSenha() {
 }
 
 /* =====================================================
-   MÁSCARA AUTOMÁTICA DE CPF
+   MÁSCARA E AUTOCOMPLETE AUTOMÁTICO (CPF, MATRÍCULA E TELEFONE)
 ===================================================== */
+
+function aplicarMascaraMatricula(input) {
+    if (!input) return;
+    let raw = input.value;
+    if (!raw) return;
+
+    let upper = raw.toUpperCase();
+
+    // Se o usuário digitou apenas números (ex: 1 ou 001), formata automaticamente como FUNC-001
+    if (/^\d+$/.test(raw)) {
+        let num = parseInt(raw, 10);
+        input.value = `FUNC-${num < 1000 ? String(num).padStart(3, '0') : num}`;
+        return;
+    }
+
+    if (/^FUNC/i.test(raw)) {
+        let rest = upper.replace(/^FUNC-?/, "");
+        if (raw.endsWith("-") && rest === "") {
+            input.value = "FUNC-";
+        } else if (rest.length > 0) {
+            input.value = "FUNC-" + rest;
+        } else {
+            input.value = "FUNC-";
+        }
+        return;
+    }
+
+    if (/^FUN?C?$/i.test(raw)) {
+        if (upper.length >= 4) {
+            input.value = "FUNC-";
+        } else {
+            input.value = upper;
+        }
+        return;
+    }
+
+    input.value = upper;
+}
+
+function aplicarMascaraTelefone(input) {
+    if (!input) return;
+    let valor = input.value.replace(/\D/g, "");
+    if (valor.length > 11) valor = valor.slice(0, 11);
+
+    if (valor.length > 10) {
+        valor = valor.replace(/^(\d{2})(\d{5})(\d{4})$/, "($1) $2-$3");
+    } else if (valor.length > 6) {
+        valor = valor.replace(/^(\d{2})(\d{4,5})(\d{0,4})$/, "($1) $2-$3");
+    } else if (valor.length > 2) {
+        valor = valor.replace(/^(\d{2})(\d{0,5})$/, "($1) $2");
+    } else if (valor.length > 0) {
+        valor = valor.replace(/^(\d{0,2})$/, "($1");
+    }
+    input.value = valor;
+}
 
 function aplicarMascaraCPF(input) {
     if (!input) return;
     let raw = input.value;
     if (!raw) return;
 
-    // Se o usuário começar a digitar "func" ou tiver letras (Matrícula)
+    // Se o usuário começar a digitar letras (ex: FUNC ou Matrícula), redireciona para a máscara de Matrícula
     if (/^[fF]/i.test(raw) || /[a-zA-Z]/.test(raw)) {
-        let upper = raw.toUpperCase();
-
-        if (/^FUNC/i.test(raw)) {
-            let digits = upper.replace(/^FUNC-?/, "").replace(/\D/g, "");
-            if (raw.endsWith("-") && digits === "") {
-                input.value = "FUNC-";
-            } else if (digits.length > 0) {
-                input.value = "FUNC-" + digits;
-            } else {
-                input.value = "FUNC-";
-            }
-            return;
-        }
-
-        if (/^FUN?C?$/i.test(raw)) {
-            if (upper.length >= 4) {
-                input.value = "FUNC-";
-            } else {
-                input.value = upper;
-            }
-            return;
-        }
-
-        input.value = upper;
+        aplicarMascaraMatricula(input);
         return;
     }
 
@@ -940,6 +972,20 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    const campoMatricula = document.getElementById("matricula");
+    if (campoMatricula) {
+        campoMatricula.addEventListener("input", function () {
+            aplicarMascaraMatricula(this);
+        });
+    }
+
+    const campoTelefone = document.getElementById("telefone");
+    if (campoTelefone) {
+        campoTelefone.addEventListener("input", function () {
+            aplicarMascaraTelefone(this);
+        });
+    }
+
     carregarProfissoesESetores();
 
     const urlParams = new URLSearchParams(window.location.search);
@@ -959,6 +1005,8 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 window.formatarCPF = aplicarMascaraCPF;
+window.formatarMatricula = aplicarMascaraMatricula;
+window.formatarTelefone = aplicarMascaraTelefone;
 window.sairSistema = fazerLogout;
 
 const consultarFuncionario = consultarUsuario;
