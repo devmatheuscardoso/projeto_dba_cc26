@@ -557,6 +557,10 @@ As telas abaixo demonstram o sistema final com a interface moderna (HTML5 + CSS3
 ![Devolução de EPI](docs/screenshot_06_devolucao.png)
 *Histórico de retiradas pendentes buscado pelo CPF, com controle de status (RETIRADO → DEVOLVIDO).*
 
+#### 8. Inativação / Exclusão de Funcionário
+![Inativação / Exclusão de Funcionário](docs/screenshot_08_deletar.png)
+*Validação visual e confirmação de inativação lógica (soft delete) do colaborador por CPF ou Matrícula.*
+
 ---
 
 ### 7.2 Evidências de Consultas no Banco de Dados (DBA - SQL)
