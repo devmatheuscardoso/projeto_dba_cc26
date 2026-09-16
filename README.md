@@ -400,34 +400,147 @@ INSERT INTO admins (usuario, senha) VALUES
 
 ## 6. Guia de Instalação e Execução
 
-### Pré-requisitos
-- **Python 3.8+** instalado.
-- **Banco de Dados**: MySQL Server, Microsoft SQL Server, ou SQLite (embutido).
+Esta seção explica **passo a passo como baixar, instalar, configurar e executar o projeto no Windows (CMD / Terminal) ou Linux/macOS**.
 
-### Passo 1: Clonar o Repositório
-```bash
+> **Importante:** os comandos abaixo podem ser executados no **CMD / Terminal**, salvo quando indicado que devem ser executados no MySQL Workbench.  
+> **O projeto já conta com suporte nativo a múltiplos bancos de dados (MySQL, SQLite e Microsoft SQL Server).**
+
+---
+
+### 6.1 Pré-requisitos
+
+Antes de começar, certifique-se de ter os seguintes componentes instalados:
+
+- **Python 3.8 ou superior**
+- **Banco de Dados**: MySQL Server 8.0+, Microsoft SQL Server ou SQLite (embutido)
+- **MySQL Workbench** (recomendado para gerenciar e executar o script SQL no MySQL)
+- **Git** (opcional, para clonar o repositório)
+
+---
+
+### 6.2 Instalação e Verificação do Python
+
+1. Baixe o Python pelo site oficial (python.org).
+2. Durante a instalação no Windows, **marque obrigatoriamente a opção `Add Python.exe to PATH`**.
+3. Abra o **CMD** ou Terminal e verifique a instalação:
+
+```cmd
+python --version
+pip --version
+```
+
+---
+
+### 6.3 Instalação e Preparação do Banco de Dados (MySQL / SQLite / MSSQL)
+
+#### Opção A: MySQL Server (Recomendado / Padrão)
+Durante a instalação do MySQL Server, defina:
+- Usuário: `root`
+- Senha: **Sua senha do MySQL**
+- Porta: `3306`
+
+#### Opção B: SQLite (Zero-Config)
+Não requer instalação de servidor. O arquivo `.db` será criado automaticamente pelo Python.
+
+---
+
+### 6.4 Obter o Projeto (GitHub / ZIP)
+
+#### Opção A — Via Git:
+```cmd
 git clone https://github.com/devmatheuscardoso/projeto_dba_cc26.git
 cd projeto_dba_cc26
 ```
 
-### Passo 2: Instalar Dependências Python
-Instale a biblioteca de conexão correspondente ao seu banco de dados escolhido:
-```bash
-pip install mysql-connector-python  # Para MySQL
-pip install pyodbc                  # Para SQL Server
-# Não é necessário instalar nada extra para SQLite.
-```
-
-### Passo 3: Configuração das Credenciais do Banco de Dados
-
-O sistema oferece **duas formas** para você configurar a conexão com o banco de dados. Escolha a que preferir:
+#### Opção B — Via Download ZIP:
+1. Faça o download e extraia o arquivo `.zip`.
+2. Abra o CMD na pasta extraída (no Explorador de Arquivos, digite `cmd` na barra de endereço).
 
 ---
 
-#### Método 1: Criando o arquivo `.env` (Recomendado)
-Na pasta `backend/`, crie um arquivo chamado `.env` e defina as variáveis de ambiente conforme o banco de dados desejado:
+### 6.5 Instalar as Bibliotecas Python
 
-##### Opção A: MySQL (Padrão / Recomendado)
+Instale a biblioteca referente ao banco escolhido:
+
+```cmd
+pip install mysql-connector-python  # Para MySQL
+pip install pyodbc                  # Para SQL Server (opcional)
+# Para SQLite, nenhuma biblioteca extra é necessária.
+```
+
+Para confirmar a instalação:
+```cmd
+pip show mysql-connector-python
+```
+
+---
+
+### 6.6 Conferir a Estrutura do Projeto
+
+Confirme se os arquivos principais estão presentes:
+```text
+projeto_dba_cc26/
+├── ConsultaFuncionarios/   # Frontend (HTML, CSS, JS)
+├── backend/
+│   ├── config.py           # Conexão Multi-DB
+│   ├── init_db.sql         # Script DDL/DML de carga inicial
+│   └── servidor.py         # Servidor HTTP nativo Python
+└── README.md
+```
+
+---
+
+### 6.7 Inicializar o Banco de Dados (`init_db.sql`)
+
+Antes de rodar a aplicação, execute o arquivo `backend/init_db.sql` para criar as tabelas e dados iniciais.
+
+#### Método 1: Via MySQL Workbench / DBeaver / phpMyAdmin
+1. Abra o **MySQL Workbench** e conecte-se com o usuário `root`.
+2. Vá em **File -> Open SQL Script...** (`Ctrl + O`) e abra `backend/init_db.sql`.
+3. Execute o script clicando no ícone do **raio** (`Ctrl + Shift + Enter`).
+
+#### Método 2: Via Linha de Comando (CMD / PowerShell / Bash)
+- **Windows (CMD):**
+  ```cmd
+  mysql -u root -p < backend\init_db.sql
+  ```
+- **Windows (PowerShell):**
+  ```powershell
+  Get-Content backend\init_db.sql | mysql -u root -p
+  ```
+- **Linux / macOS:**
+  ```bash
+  mysql -u root -p < backend/init_db.sql
+  ```
+
+#### Método 3: Via SQLite CLI
+```cmd
+sqlite3 backend\controle_funcionarios.db < backend\init_db.sql
+```
+
+---
+
+### 6.8 Conferir se o Banco de Dados Foi Criado
+
+No MySQL Workbench ou CLI:
+```sql
+SHOW DATABASES;
+USE controle_usuarios;
+SHOW TABLES;
+```
+As tabelas `admins`, `epis`, `funcionarios`, `itens_retirada`, `profissoes`, `retiradas` e `setores` devem ser exibidas.
+
+---
+
+### 6.9 Configuração das Credenciais e Multi-DB (`.env` ou `config.py`)
+
+O sistema permite configurar as credenciais de **duas formas**:
+
+#### Forma 1: Criando o arquivo `backend/.env` (Recomendado)
+
+Crie o arquivo `backend/.env` com as configurações do seu ambiente:
+
+##### Para MySQL:
 ```env
 DB_DRIVER=mysql
 
@@ -436,97 +549,94 @@ MYSQL_PORT=3306
 MYSQL_USER=root
 MYSQL_PASSWORD=SuaSenhaAqui
 MYSQL_DATABASE=controle_funcionarios
+PORTA_SERVIDOR=8080
 ```
 
-##### Opção B: SQLite (Zero-Config / Sem necessidade de instalar servidor)
+##### Para SQLite:
 ```env
 DB_DRIVER=sqlite
 SQLITE_FILE=controle_funcionarios.db
+PORTA_SERVIDOR=8080
 ```
 
-##### Opção C: Microsoft SQL Server (MSSQL)
+##### Para SQL Server (MSSQL):
 ```env
 DB_DRIVER=mssql
-
 MSSQL_SERVER=localhost
 MSSQL_PORT=1433
 MSSQL_USER=sa
 MSSQL_PASSWORD=SuaSenhaAqui
 MSSQL_DATABASE=controle_funcionarios
 MSSQL_DRIVER=ODBC Driver 17 for SQL Server
+PORTA_SERVIDOR=8080
 ```
+
+#### Forma 2: Editando `backend/config.py`
+Caso prefira não usar o `.env`, edite os valores padrão diretamente no arquivo `backend/config.py`.
 
 ---
 
-#### Método 2: Editando diretamente no arquivo `backend/config.py`
-Se não quiser criar o arquivo `.env`, você pode alterar os valores padrão diretamente no arquivo `backend/config.py`. Para isso, modifique o texto **depois da vírgula** no segundo parâmetro da função `os.getenv("CHAVE", "valor_padrao")`:
+### 6.10 Iniciar o Servidor Python
 
-- **Para MySQL (`backend/config.py`):**
-  ```python
-  host = os.getenv("MYSQL_HOST", "localhost")          # Altere "localhost" se o host for diferente
-  port = int(os.getenv("MYSQL_PORT", "3306"))          # Altere "3306" para a porta do seu MySQL
-  user = os.getenv("MYSQL_USER", "root")               # Altere "root" para seu usuário do banco
-  password = os.getenv("MYSQL_PASSWORD", "SuaSenha")   # <-- Altere "" para sua senha entre aspas
-  database = os.getenv("MYSQL_DATABASE", "controle_funcionarios") # Nome do banco de dados
-  ```
+No CMD / Terminal dentro da pasta do projeto, execute:
 
-- **Para outros bancos em `backend/config.py`:**
-  - **SQL Server (MSSQL):** Altere os valores após a vírgula em `MSSQL_SERVER`, `MSSQL_USER`, `MSSQL_PASSWORD`, etc.
-  - **SQLite:** Caso queira mudar o caminho do arquivo `.db`, altere o segundo argumento em `os.getenv("SQLITE_FILE", "caminho_do_banco.db")`.
+```cmd
+python backend\servidor.py
+```
+
+Mantenha essa janela do terminal aberta enquanto utilizar o sistema.
 
 ---
 
-### Passo 4: Como Executar o Script de Inicialização (`init_db.sql`)
+### 6.11 Acessar a Interface Web
 
-Antes de iniciar a aplicação, é necessário criar o banco de dados e as tabelas com a carga inicial de dados executando o arquivo `backend/init_db.sql`. Escolha a forma de execução adequada ao seu ambiente:
-
-#### Opção 1: Via Linha de Comando / Terminal (MySQL CLI)
-Abra o terminal ou prompt de comando na raiz do projeto e execute:
-
-- **Linux / macOS / Git Bash:**
-  ```bash
-  mysql -u root -p < backend/init_db.sql
-  ```
-- **Windows (PowerShell):**
-  ```powershell
-  Get-Content backend\init_db.sql | mysql -u root -p
-  ```
-- **Windows (CMD):**
-  ```cmd
-  mysql -u root -p < backend\init_db.sql
-  ```
-*(O sistema solicitará a sua senha do MySQL e criará automaticamente a base de dados `controle_funcionarios` com todas as tabelas e dados pré-cadastrados).*
-
-#### Opção 2: Via MySQL Workbench / DBeaver / phpMyAdmin
-1. Abra o **MySQL Workbench** (ou **DBeaver** / **phpMyAdmin**).
-2. Conecte-se ao seu servidor MySQL local ou remoto.
-3. No menu superior, vá em **File -> Open SQL Script...** (ou pressione `Ctrl + O`) e selecione o arquivo `backend/init_db.sql`.
-4. Clique no ícone de **raio** (Execute SQL script / `Ctrl + Shift + Enter`) para rodar todas as instruções.
-5. Verifique no painel lateral de Schemas se o banco `controle_funcionarios` foi criado com sucesso.
-
-#### Opção 3: Se estiver utilizando SQLite
-Se optou por utilizar SQLite (`DB_DRIVER=sqlite`), você pode criar a estrutura no arquivo executando no terminal:
-```bash
-sqlite3 backend/controle_funcionarios.db < backend/init_db.sql
-```
-*(Ou utilize uma ferramenta gráfica como **DB Browser for SQLite** para importar o arquivo `init_db.sql`).*
-
-### Passo 5: Executar o Servidor Python
-Inicie o servidor HTTP nativo:
-```bash
-python backend/servidor.py
-```
-
-### Passo 6: Acessar a Interface Web
-Abra o navegador de sua preferência e acesse:
+Abra o navegador e acesse:
 ```text
 http://localhost:8080
 ```
 
-- **Usuário Admin Padrão**: `admin`
+---
+
+### 6.12 Login Inicial do Sistema
+
+- **Usuário Admin**: `admin`
 - **Senha**: `1234`
-  
+
+*(Nota: Estes dados referem-se à autenticação no painel web do sistema, e não à senha do MySQL).*
+
+---
+
+### 6.13 Resumo Completo de Comandos no CMD
+
+```cmd
+git clone https://github.com/devmatheuscardoso/projeto_dba_cc26.git
+cd projeto_dba_cc26
+pip install mysql-connector-python
+python backend\servidor.py
+```
+
+---
+
+### 6.14 Como Parar o Servidor
+
+Na janela do CMD onde o servidor está rodando, pressione:
+```text
+Ctrl + C
+```
+
+---
+
+### 6.15 Solução de Problemas Comuns
+
+- **`python` ou `pip` não é reconhecido:** Reinstale o Python marcando a opção *Add Python to PATH*.
+- **Erro de conexão MySQL / `Access denied`:** Verifique a senha do usuário `root` no arquivo `backend/.env` ou `backend/config.py`.
+- **`Unknown database`:** O script `backend/init_db.sql` ainda não foi executado no seu banco de dados.
+- **Servidor não responde no navegador:** Certifique-se de que a janela do CMD com o `python backend/servidor.py` está aberta e sem erros.
+
+---
+
 ## 7. Evidências Visuais (Interface Redesenhada)
+
 As telas abaixo demonstram o sistema final com a interface moderna (HTML5 + CSS3 puro com animações, fonte Inter e layout em cards).
 
 #### 1. Tela de Login
@@ -582,3 +692,20 @@ Abaixo estão os comprovantes de execução das consultas SQL no Banco de Dados 
 #### 4. Controle e Atualização de Devoluções de EPIs
 ![Select Devoluções](docs/prints/03b_select_devolucao.png)
 *Verificação dos itens com controle de status de devolução e reposição ao estoque.*
+
+---
+
+## Observação importante — erro no login do administrador
+
+Se a instalação estiver funcionando, mas o login do administrador não estiver sendo aceito, verifique o arquivo `backend/config.py` e a configuração `MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD")`. Confira se a senha do seu MySQL está sendo carregada corretamente. Caso não esteja, insira manualmente no `config.py`, por exemplo:
+
+```python
+MYSQL_PASSWORD = "SUA_SENHA_DO_MYSQL"
+```
+
+Depois, salve o arquivo, encerre o servidor com `Ctrl + C` e execute novamente:
+
+```cmd
+python backend\servidor.py
+```
+
