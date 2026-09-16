@@ -418,12 +418,16 @@ pip install pyodbc                  # Para SQL Server
 # Não é necessário instalar nada extra para SQLite.
 ```
 
-### Passo 3: Configurar Credenciais e Multi-DB (.env)
-Para não expor senhas no código, o sistema utiliza variáveis de ambiente de forma unificada.
+### Passo 3: Configuração das Credenciais do Banco de Dados
 
-Na pasta `backend/`, crie o arquivo `.env` e escolha uma das opções abaixo:
+O sistema oferece **duas formas** para você configurar a conexão com o banco de dados. Escolha a que preferir:
 
-#### Opção A: MySQL (Recomendado / Padrão)
+---
+
+#### Método 1: Criando o arquivo `.env` (Recomendado)
+Na pasta `backend/`, crie um arquivo chamado `.env` e defina as variáveis de ambiente conforme o banco de dados desejado:
+
+##### Opção A: MySQL (Padrão / Recomendado)
 ```env
 DB_DRIVER=mysql
 
@@ -434,13 +438,13 @@ MYSQL_PASSWORD=SuaSenhaAqui
 MYSQL_DATABASE=controle_funcionarios
 ```
 
-#### Opção B: SQLite (Zero-Config / Sem necessidade de servidor)
+##### Opção B: SQLite (Zero-Config / Sem necessidade de instalar servidor)
 ```env
 DB_DRIVER=sqlite
 SQLITE_FILE=controle_funcionarios.db
 ```
 
-#### Opção C: Microsoft SQL Server (MSSQL)
+##### Opção C: Microsoft SQL Server (MSSQL)
 ```env
 DB_DRIVER=mssql
 
@@ -452,10 +456,60 @@ MSSQL_DATABASE=controle_funcionarios
 MSSQL_DRIVER=ODBC Driver 17 for SQL Server
 ```
 
-O arquivo `.env` está no `.gitignore`. O `config.py` carregará automaticamente o banco escolhido e instanciará a fábrica de conexão.
+---
 
-### Passo 4: Inicializar o Banco de Dados
-Certifique-se de salvar o script SQL fornecido na Seção 4 no arquivo `backend/init_db.sql` e executá-lo no seu banco de dados favorito para criar as tabelas e a carga inicial.
+#### Método 2: Editando diretamente no arquivo `backend/config.py`
+Se não quiser criar o arquivo `.env`, você pode alterar os valores padrão diretamente no arquivo `backend/config.py`. Para isso, modifique o texto **depois da vírgula** no segundo parâmetro da função `os.getenv("CHAVE", "valor_padrao")`:
+
+- **Para MySQL (`backend/config.py`):**
+  ```python
+  host = os.getenv("MYSQL_HOST", "localhost")          # Altere "localhost" se o host for diferente
+  port = int(os.getenv("MYSQL_PORT", "3306"))          # Altere "3306" para a porta do seu MySQL
+  user = os.getenv("MYSQL_USER", "root")               # Altere "root" para seu usuário do banco
+  password = os.getenv("MYSQL_PASSWORD", "SuaSenha")   # <-- Altere "" para sua senha entre aspas
+  database = os.getenv("MYSQL_DATABASE", "controle_funcionarios") # Nome do banco de dados
+  ```
+
+- **Para outros bancos em `backend/config.py`:**
+  - **SQL Server (MSSQL):** Altere os valores após a vírgula em `MSSQL_SERVER`, `MSSQL_USER`, `MSSQL_PASSWORD`, etc.
+  - **SQLite:** Caso queira mudar o caminho do arquivo `.db`, altere o segundo argumento em `os.getenv("SQLITE_FILE", "caminho_do_banco.db")`.
+
+---
+
+### Passo 4: Como Executar o Script de Inicialização (`init_db.sql`)
+
+Antes de iniciar a aplicação, é necessário criar o banco de dados e as tabelas com a carga inicial de dados executando o arquivo `backend/init_db.sql`. Escolha a forma de execução adequada ao seu ambiente:
+
+#### Opção 1: Via Linha de Comando / Terminal (MySQL CLI)
+Abra o terminal ou prompt de comando na raiz do projeto e execute:
+
+- **Linux / macOS / Git Bash:**
+  ```bash
+  mysql -u root -p < backend/init_db.sql
+  ```
+- **Windows (PowerShell):**
+  ```powershell
+  Get-Content backend\init_db.sql | mysql -u root -p
+  ```
+- **Windows (CMD):**
+  ```cmd
+  mysql -u root -p < backend\init_db.sql
+  ```
+*(O sistema solicitará a sua senha do MySQL e criará automaticamente a base de dados `controle_funcionarios` com todas as tabelas e dados pré-cadastrados).*
+
+#### Opção 2: Via MySQL Workbench / DBeaver / phpMyAdmin
+1. Abra o **MySQL Workbench** (ou **DBeaver** / **phpMyAdmin**).
+2. Conecte-se ao seu servidor MySQL local ou remoto.
+3. No menu superior, vá em **File -> Open SQL Script...** (ou pressione `Ctrl + O`) e selecione o arquivo `backend/init_db.sql`.
+4. Clique no ícone de **raio** (Execute SQL script / `Ctrl + Shift + Enter`) para rodar todas as instruções.
+5. Verifique no painel lateral de Schemas se o banco `controle_funcionarios` foi criado com sucesso.
+
+#### Opção 3: Se estiver utilizando SQLite
+Se optou por utilizar SQLite (`DB_DRIVER=sqlite`), você pode criar a estrutura no arquivo executando no terminal:
+```bash
+sqlite3 backend/controle_funcionarios.db < backend/init_db.sql
+```
+*(Ou utilize uma ferramenta gráfica como **DB Browser for SQLite** para importar o arquivo `init_db.sql`).*
 
 ### Passo 5: Executar o Servidor Python
 Inicie o servidor HTTP nativo:
