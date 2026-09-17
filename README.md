@@ -9,7 +9,8 @@ Sistema web completo para controle de estoque, fornecimento e rastreio de Equipa
 * **Instituição:** Universidade Paulista (UNIP)
 * **Curso:** Bacharelado em Ciência da Computação
 * **Disciplina:** Banco de Dados (NP1)
-* **Semestre:** 3º Semestre / 4º Semestre 
+* **Semestre:** 3º Semestre / 4º Semestre
+* **Turma:** CC3P17
 * **Ano:** 2026
 * **Integrantes do Grupo:**
   * Flávio Augusto Rodrigues de Oliveira - R950239
